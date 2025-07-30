@@ -27,7 +27,7 @@ struct GameConfig {
     struct Category {
         std::function<ScoreType(const Dices&)> calc_score;
 
-    }
+    };
 };
 
 #endif //GAMECONFIG_H

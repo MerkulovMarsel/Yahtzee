@@ -26,6 +26,6 @@ void GameController::update(float dt) {
 }
 
 void GameController::render(sf::RenderWindow &window) {
-    std::apply([&](const std::unique_ptr<GameObject>& object){object->render(window);},
-        objects );
+    // std::apply([&](const std::unique_ptr<GameObject>& object){object->render(window);},
+    //     objects );
 }

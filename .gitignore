@@ -18,3 +18,4 @@ Makefile
 # Python
 __pycache__
 .venv
+cmake-build-debug

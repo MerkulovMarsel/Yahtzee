@@ -23,7 +23,6 @@ void Application::run() {
         sf::Event event;
         sf::Sprite sprite();
 
-        window.draw(sprite);
         while (window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(window, event);
             if (event.type == sf::Event::Closed) {

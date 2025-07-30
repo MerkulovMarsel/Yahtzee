@@ -19,13 +19,10 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         config/Config.h
         objects/info/Info.cpp
         objects/info/Info.h
-        core/Players/bot/BotPlayer.cpp
-        core/Players/bot/BotPlayer.h
         config/handler/EventHandler.cpp
         config/handler/EventHandler.h
         objects/GameObject.h
         config/GameConfig/GameConfig.h
-        core/Players/Player.h
         GameController.cpp
         GameController.h
 )
