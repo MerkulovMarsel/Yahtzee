@@ -11,80 +11,52 @@
 //     }
 // }
 //
-#include <SFML/Graphics.hpp>
-#include <imgui-SFML.h>
 #include <imgui.h>
+#include <imgui-SFML.h>
+#include <SFML/Graphics.hpp>
+#include <iostream> // Для вывода ошибок
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Game Settings");
-    window.setFramerateLimit(60);
-    ImGui::SFML::Init(window);
+    // 1. Инициализация окна SFML
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Yahtzee");
+    if (!window.isOpen()) {
+        std::cerr << "Failed to create SFML window!" << std::endl;
+        return 1;
+    }
 
-    // Переменные состояния
-    enum class AppState { Settings, Game };
-    AppState currentState = AppState::Settings;
-    int categoryCount = 0; // 0 = не выбрано
+    // 2. Инициализация ImGui-SFML
+    if (!ImGui::SFML::Init(window)) {
+        std::cerr << "Failed to initialize ImGui-SFML!" << std::endl;
+        return 1;
+    }
 
     sf::Clock deltaClock;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(event);
-            if (event.type == sf::Event::Closed)
+
+            // Обработка закрытия окна
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
         }
 
+        // 3. Обновление ImGui
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        // --- ОКНО НАСТРОЕК ---
-        if (currentState == AppState::Settings) {
-            // Центрируем окно
-            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-            ImGui::SetNextWindowSize(ImVec2(400, 200));
+        // 4. Создание интерфейса
+        ImGui::Begin("Debug");
+        ImGui::Text("Hello, ImGui!");
+        ImGui::End();
 
-            ImGui::Begin("Game Settings", nullptr,
-                ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoResize |
-                ImGuiWindowFlags_NoMove
-            );
-
-            // Текст вопроса
-            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize("Выберите количество категорий").x) * 0.5f);
-            ImGui::Text("Выберите количество категорий");
-
-            // Кнопки
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30);
-            float buttonWidth = 100.f;
-            float spacing = (ImGui::GetWindowWidth() - buttonWidth * 2) / 3;
-
-            ImGui::SetCursorPosX(spacing);
-            if (ImGui::Button("6", ImVec2(buttonWidth, 60))) {
-                categoryCount = 6;
-                currentState = AppState::Game;
-            }
-
-            ImGui::SameLine();
-            ImGui::SetCursorPosX(spacing * 2 + buttonWidth);
-            if (ImGui::Button("12", ImVec2(buttonWidth, 60))) {
-                categoryCount = 12;
-                currentState = AppState::Game;
-            }
-
-            ImGui::End();
-        }
-        // --- ОСНОВНАЯ ИГРА ---
-        else {
-            // Здесь ваша основная игровая логика
-            // categoryCount содержит выбранное значение (6 или 12)
-        }
-
-        // Отрисовка
-        window.clear(sf::Color(50, 50, 50));
+        // 5. Отрисовка
+        window.clear();
         ImGui::SFML::Render(window);
         window.display();
     }
 
+    // 6. Корректное завершение
     ImGui::SFML::Shutdown();
     return 0;
 }

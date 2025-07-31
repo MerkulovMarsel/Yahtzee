@@ -27,6 +27,12 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         GameController.h
 )
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "$<TARGET_FILE:${PROJECT_NAME}>"
+        "$<TARGET_FILE_DIR:yahtzee-app>"
+)
+
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${IMGUI_INCLUDE_DIR}
