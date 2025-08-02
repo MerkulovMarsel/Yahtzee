@@ -6,11 +6,14 @@
 #define GAMEOBJECT_H
 #include "SFML/Graphics/RenderWindow.hpp"
 
+// Это базовый класс всех объектов, которые рисуются
+
 class GameObject {
 public:
     virtual ~GameObject() = default;
 
     virtual void render(sf::RenderWindow&) const  = 0;
+
 };
 
 

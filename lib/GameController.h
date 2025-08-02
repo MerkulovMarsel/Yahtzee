@@ -23,7 +23,7 @@ public:
     void render(sf::RenderWindow & window);
 
 private:
-    // Game game;
+    Game game;
     Config config;
     std::vector<std::unique_ptr<GameObject>> objects;
 };
