@@ -82,6 +82,7 @@ struct GameConfig {
 
     using BonusCalcFunction = std::function<ScoreType(const Categories&)>;
 
+
     enum class AvailableBonusCalcFUnction : std::uint8_t {
         CLASSIC_BONUS_63 = 63
     };
@@ -90,7 +91,7 @@ struct GameConfig {
         return static_cast<std::size_t>(dice);
     }
 
-    template<std::size_t BORDER>
+
     static ScoreType classic_border_bonus(const Categories& categories) {
         ScoreType result = 0;
         for (const auto& c : categories) {
@@ -110,20 +111,20 @@ struct GameConfig {
     static BonusCalcFunction get_bonus_function(const AvailableBonusCalcFUnction bonus) {
         switch (bonus) {
             case AvailableBonusCalcFUnction::CLASSIC_BONUS_63:
-                return classic_border_bonus<to_n(AvailableBonusCalcFUnction::CLASSIC_BONUS_63)>;
+                return classic_border_bonus;
             default:
                 throw ConfigException(ConfigException::ExceptionType::NO_IMPLEMENTATION_BONUS_CALC_FUNCTION);
         }
     }
 
     struct Bonus {
-        std::function<ScoreType(const Categories&)> calc_score;
+        BonusCalcFunction calc_score;
         ScoreType bonus;
-        ScoreType border;
+        ScoreType threshold;
     };
 
 
-    enum GameRuleFlags : std::uint64_t {
+    enum class GameRuleFlags : std::uint64_t {
         ASYNC_MODE = 0x01
     };
 

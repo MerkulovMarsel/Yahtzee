@@ -15,7 +15,6 @@
 
 class Game {
 
-
     enum SpecialEvent : std::uint8_t {
         STOP_PLAYING_EVENT
     };
