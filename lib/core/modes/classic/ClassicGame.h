@@ -6,7 +6,7 @@
 #define SMALLCLASSICGAME_H
 #include "core/game.h"
 
-// TODO
+// PASHA YOU NEED TO DO
 class ClassicGame final : Game {
 
 
