@@ -5,7 +5,9 @@
 #ifndef GAMECONFIG_H
 #define GAMECONFIG_H
 #include <functional>
-#include <span>
+#include <numeric>
+#include <ranges>
+#include <vector>
 
 #include "exception/config/ConfigException.h"
 
@@ -20,7 +22,7 @@ struct GameConfig {
         FIVE = 5,
         SIX = 6
     };
-    using Dices = std::span<DiceValues>;
+    using Dices = std::vector<std::pair<DiceValues, bool>>;
 
     static constexpr std::size_t to_n(const DiceValues dice) {
         return static_cast<std::size_t>(dice);
@@ -36,32 +38,25 @@ struct GameConfig {
 
     using CategoryCalcFunction = std::function<ScoreType(Dices)>;
 
-    template<std::size_t N>
-    static ScoreType ctor_sumN(const Dices dices) {
-        if constexpr (N <= to_n(DiceValues::UNKNOW) || N > to_n(DiceValues::SIX)) {
-            throw ConfigException(ConfigException::ExceptionType::INVALID_CALC_FUNCTION_TEMPLATE);
-        }
-        ScoreType result = 0;
-        for (const auto& d : dices) {
-            result += (d == static_cast<DiceValues>(N)) ? N : 0;
-        }
-        return result;
+
+    static CategoryCalcFunction make_sum_function(DiceValues target) {
+        return [target](Dices dices) {
+            return std::accumulate(dices.begin(), dices.end(), ScoreType{0},
+                [target](ScoreType sum, auto val) {
+                    return sum + (val == target ? to_n(target) : 0);
+                });
+        };
     }
 
     static CategoryCalcFunction get_calc_function(const AvailableCategory category) {
         switch (category) {
             case AvailableCategory::SUM_1:
-                return ctor_sumN<to_n(DiceValues::ONE)>;
             case AvailableCategory::SUM_2:
-                return ctor_sumN<to_n(DiceValues::TWO)>;
             case AvailableCategory::SUM_3:
-                return ctor_sumN<to_n(DiceValues::THREE)>;
             case AvailableCategory::SUM_4:
-                return ctor_sumN<to_n(DiceValues::FOUR)>;
             case AvailableCategory::SUM_5:
-                return ctor_sumN<to_n(DiceValues::FIVE)>;
             case AvailableCategory::SUM_6:
-                return ctor_sumN<to_n(DiceValues::SIX)>;
+                return make_sum_function(static_cast<DiceValues>(category));
             default:
                 throw
                 ConfigException(ConfigException::ExceptionType::NO_IMPLEMENTATION_CATEGORY_CALC_FUNCTION);
@@ -83,7 +78,7 @@ struct GameConfig {
         }
     };
 
-    using Categories = std::span<Category>;
+    using Categories = std::vector<Category>;
 
     using BonusCalcFunction = std::function<ScoreType(const Categories&)>;
 
@@ -128,17 +123,25 @@ struct GameConfig {
     };
 
 
-    enum class Rules : std::uint8_t {
-        ASINC_MODE
+    enum GameRuleFlags : std::uint64_t {
+        ASYNC_MODE = 0x01
     };
+
+
+
+    bool is_rule_enabled(const GameRuleFlags rule) const {
+        return (enabled_rules & static_cast<uint32_t>(rule)) != 0u;
+    }
 
     std::size_t players_count;
     std::size_t dice_count;
     std::size_t category_count;
     std::size_t bonus_count;
+    std::size_t rolls_count;
+    uint32_t enabled_rules = 0;
     std::vector<Categories> categories;
     std::vector<Bonus> bonus;
-    std::vector<Rules> rules;
+
 };
 
 #endif //GAMECONFIG_H

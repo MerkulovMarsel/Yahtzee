@@ -15,6 +15,12 @@
 
 class Game {
 
+
+    enum SpecialEvent : std::uint8_t {
+        STOP_PLAYING_EVENT
+    };
+
+
     struct PlayerInfo {
         std::vector<GameConfig::ScoreType> category_scores;
         std::vector<GameConfig::Bonus> bonus_scores;
@@ -40,6 +46,8 @@ public:
     virtual void set_category(std::size_t player_index, std::size_t category_index) = 0;
 
     virtual bool is_game_over() const = 0;
+
+    virtual void special_event(std::size_t player_index, SpecialEvent event) = 0;
 };
 
 #endif //GAME_H
