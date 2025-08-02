@@ -132,7 +132,7 @@ struct GameConfig {
         ASINC_MODE
     };
 
-
+    std::size_t players_count;
     std::size_t dice_count;
     std::size_t category_count;
     std::size_t bonus_count;
