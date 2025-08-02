@@ -10,7 +10,9 @@ const char * ConfigException::what() const noexcept {
         case ExceptionType::INVALID_CALC_FUNCTION_TEMPLATE:
             return "Invalid calc function template";
         case ExceptionType::NO_IMPLEMENTATION_CATEGORY_CALC_FUNCTION:
-            return "No calc function implementation";
+            return "No category calc function implementation";
+        case ExceptionType::NO_IMPLEMENTATION_BONUS_CALC_FUNCTION:
+            return "No bonus calc function implementation";
         default:
             return "Unknown exception type";
     }

@@ -116,6 +116,8 @@ struct GameConfig {
         switch (bonus) {
             case AvailableBonusCalcFUnction::CLASSIC_BONUS_63:
                 return classic_border_bonus<to_n(AvailableBonusCalcFUnction::CLASSIC_BONUS_63)>;
+            default:
+                throw ConfigException(ConfigException::ExceptionType::NO_IMPLEMENTATION_BONUS_CALC_FUNCTION);
         }
     }
 
@@ -134,6 +136,9 @@ struct GameConfig {
     std::size_t dice_count;
     std::size_t category_count;
     std::size_t bonus_count;
+    std::vector<Categories> categories;
+    std::vector<Bonus> bonus;
+    std::vector<Rules> rules;
 };
 
 #endif //GAMECONFIG_H

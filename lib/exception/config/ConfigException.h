@@ -4,14 +4,17 @@
 
 #ifndef CONFIGEXCEPTION_H
 #define CONFIGEXCEPTION_H
+#include <cstdint>
+
 #include "exception/YahtzeeException.h"
 
 
 class ConfigException final : YahtzeeException {
 public:
-    enum class ExceptionType {
+    enum class ExceptionType : std::uint8_t {
         INVALID_CALC_FUNCTION_TEMPLATE,
         NO_IMPLEMENTATION_CATEGORY_CALC_FUNCTION,
+        NO_IMPLEMENTATION_BONUS_CALC_FUNCTION,
     };
 
     explicit ConfigException(const ExceptionType type) : exceptionType(type) {}
