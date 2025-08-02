@@ -1,16 +1,19 @@
 //
-// Created by Марсель on 01.08.2025.
+// Created by Марсель on 03.08.2025.
 //
 
-#ifndef SMALLCLASSICGAME_H
-#define SMALLCLASSICGAME_H
+#ifndef SPEEDGAME_H
+#define SPEEDGAME_H
+#include <chrono>
+
 #include "core/game.h"
 
-// PASHA YOU NEED TO DO
+// Идея в том, что игра кончается тогда, когда заканчивается время
 
-class ClassicGame final : public Game {
+
+class SpeedGame final : public Game {
 public:
-    ClassicGame(const GameConfig& config);
+    SpeedGame(const GameConfig& config, std::time_t timer);
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
 
@@ -33,4 +36,4 @@ public:
 
 
 
-#endif //SMALLCLASSICGAME_H
+#endif //SPEEDGAME_H

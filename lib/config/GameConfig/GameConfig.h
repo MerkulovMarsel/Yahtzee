@@ -124,8 +124,9 @@ struct GameConfig {
     };
 
 
-    enum class GameRuleFlags : std::uint64_t {
-        ASYNC_MODE = 0x01
+    enum class GameRuleFlags : std::uint32_t {
+        ASYNC_MODE = 0x01,
+        OVERRIDE_CATEGORY = 0x02,
     };
 
 
@@ -142,6 +143,9 @@ struct GameConfig {
     std::vector<Categories> categories;
     std::vector<Bonus> bonus;
 
+    enum SpecialEvent : std::uint8_t {
+        STOP_PLAYING_EVENT
+    };
 };
 
 #endif //GAMECONFIG_H

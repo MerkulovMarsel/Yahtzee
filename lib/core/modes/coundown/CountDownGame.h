@@ -1,16 +1,16 @@
 //
-// Created by Марсель on 01.08.2025.
+// Created by Марсель on 03.08.2025.
 //
 
-#ifndef SMALLCLASSICGAME_H
-#define SMALLCLASSICGAME_H
+#ifndef COUNTDOWNGAME_H
+#define COUNTDOWNGAME_H
 #include "core/game.h"
 
-// PASHA YOU NEED TO DO
+// игра с определенным количеством ходов
 
-class ClassicGame final : public Game {
+class CountDownGame final : public Game {
 public:
-    ClassicGame(const GameConfig& config);
+    CountDownGame(const GameConfig& config, std::size_t steps_count);
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
 
@@ -33,4 +33,4 @@ public:
 
 
 
-#endif //SMALLCLASSICGAME_H
+#endif //COUNTDOWNGAME_H

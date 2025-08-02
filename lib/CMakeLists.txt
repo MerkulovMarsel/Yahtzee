@@ -31,6 +31,12 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         core/modes/classic/ClassicGame.h
         exception/config/ConfigException.cpp
         exception/config/ConfigException.h
+        core/modes/speed/SpeedGame.cpp
+        core/modes/speed/SpeedGame.h
+        core/modes/coundown/CountDownGame.cpp
+        core/modes/coundown/CountDownGame.h
+        core/modes/race/RaceGame.cpp
+        core/modes/race/RaceGame.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
