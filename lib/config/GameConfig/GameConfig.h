@@ -128,7 +128,6 @@ struct GameConfig {
     };
 
 
-
     bool is_rule_enabled(const GameRuleFlags rule) const {
         return (enabled_rules & static_cast<uint32_t>(rule)) != 0u;
     }
