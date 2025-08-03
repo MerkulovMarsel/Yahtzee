@@ -4,13 +4,11 @@
 
 #include "Application.h"
 
-#include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <imgui-SFML.h>
 #include <memory>
 
 #include "GameController.h"
-#include "config/Config.h"
 
 void Application::run() {
 
@@ -20,8 +18,7 @@ void Application::run() {
 
     auto gameController = std::make_unique<GameController>();
     while (window.isOpen()) {
-        sf::Event event;
-        sf::Sprite sprite();
+        sf::Event event{};
 
         while (window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(window, event);
@@ -29,20 +26,28 @@ void Application::run() {
                 window.close();
             }
 
-            if (event.type == sf::Event::MouseButtonPressed) {
+            /*какие еще мы поддерживаем?*/
+            if (event.type == sf::Event::MouseButtonPressed ){
+
+                // Обрабатываем взаимодействие с игроком
+                gameController->handleEvent(event);
 
             }
-
-            gameController->handleEvent(event);
         }
 
         const float dt = frameClock.restart().asSeconds();
         ImGui::SFML::Update(window, sf::seconds(dt));
 
+        //Я так понимаю можно менять анимацию в зависимости от времени,
+        //но до анимации еще далеко, так что пока пусто
         gameController->update(dt);
 
-        window.clear(sf::Color(30, 30, 40));
+        static constexpr std::uint32_t PHONE_COLOR = 0;
+        window.clear(sf::Color(PHONE_COLOR));
+
+        //Делает window.draw(Какой-то спрайт) по моей задумке
         gameController->render(window);
+
         ImGui::SFML::Render(window);
         window.display();
     }

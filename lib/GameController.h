@@ -14,6 +14,9 @@
 
 
 class GameController {
+
+
+
 public:
 
     void handleEvent(const sf::Event & event);
@@ -23,7 +26,7 @@ public:
     void render(sf::RenderWindow & window);
 
 private:
-    // Game game;
+    std::unique_ptr<Game> game;
     Config config;
     std::vector<std::unique_ptr<GameObject>> objects;
 };

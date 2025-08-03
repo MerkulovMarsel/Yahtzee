@@ -5,7 +5,6 @@ project(yahtzee-lib LANGUAGES CXX)
 # Setup a library target
 file(GLOB_RECURSE YAHTZEE_SOURCES CONFIGURE_DEPENDS *.cpp)
 add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
-        core/game.cpp
         core/game.h
         Application.cpp
         Application.h
@@ -25,6 +24,21 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         config/GameConfig/GameConfig.h
         GameController.cpp
         GameController.h
+        exception/YahtzeeException.h
+        exception/game/GameException.cpp
+        exception/game/GameException.h
+        core/modes/classic/ClassicGame.cpp
+        core/modes/classic/ClassicGame.h
+        exception/config/ConfigException.cpp
+        exception/config/ConfigException.h
+        core/modes/speed/SpeedGame.cpp
+        core/modes/speed/SpeedGame.h
+        core/modes/coundown/CountDownGame.cpp
+        core/modes/coundown/CountDownGame.h
+        core/modes/race/RaceGame.cpp
+        core/modes/race/RaceGame.h
+        objects/setting/SettingObjects.cpp
+        objects/setting/SettingObjects.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
