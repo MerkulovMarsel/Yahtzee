@@ -20,6 +20,8 @@ protected:
 
     using Players = std::vector<PlayerInfo>;
 
+    Players players_;  // info about players
+
 public:
 
     enum class GameResult : std::uint8_t {
