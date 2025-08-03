@@ -66,7 +66,6 @@ struct GameConfig {
     struct Category {
         CategoryCalcFunction calc;
         AvailableCategory type;
-        std::optional<ScoreType> value;
 
         explicit Category(const AvailableCategory category) :
             calc(get_calc_function(category)),
@@ -78,9 +77,10 @@ struct GameConfig {
         }
     };
 
-    using Categories = std::vector<Category>;
+    using CategoryPlayerInfo = std::pair<std::optional<ScoreType>, AvailableCategory>;
+    using Categories = std::vector<std::optional<ScoreType>>;
 
-    using BonusCalcFunction = std::function<ScoreType(const Categories&)>;
+    using BonusCalcFunction = std::function<ScoreType(const CategoryPlayerInfo&)>;
 
 
     enum class AvailableBonusCalcFUnction : std::uint8_t {
@@ -92,17 +92,17 @@ struct GameConfig {
     }
 
 
-    static ScoreType classic_border_bonus(const Categories& categories) {
+    static ScoreType classic_border_bonus(const CategoryPlayerInfo& categories) {
         ScoreType result = 0;
-        for (const auto& c : categories) {
-            if (c.value &&
-                (c.type == AvailableCategory::SUM_1 ||
-                 c.type == AvailableCategory::SUM_2 ||
-                 c.type == AvailableCategory::SUM_3 ||
-                 c.type == AvailableCategory::SUM_4 ||
-                 c.type == AvailableCategory::SUM_5 ||
-                 c.type == AvailableCategory::SUM_6)) {
-                result += c.value.value();
+        for (const auto& [value,c] : categories) {
+            if (value &&
+                (c == AvailableCategory::SUM_1 ||
+                 c == AvailableCategory::SUM_2 ||
+                 c == AvailableCategory::SUM_3 ||
+                 c == AvailableCategory::SUM_4 ||
+                 c == AvailableCategory::SUM_5 ||
+                 c == AvailableCategory::SUM_6)) {
+                result += value.value();
             }
         }
         return result;
