@@ -14,6 +14,7 @@ public:
 
     virtual void render(sf::RenderWindow&) const  = 0;
 
+    virtual bool touch(const sf::Event& event) const = 0;
 };
 
 

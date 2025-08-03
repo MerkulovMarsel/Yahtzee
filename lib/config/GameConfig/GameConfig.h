@@ -134,11 +134,11 @@ struct GameConfig {
         return (enabled_rules & static_cast<uint32_t>(rule)) != 0u;
     }
 
-    std::size_t players_count;
-    std::size_t dice_count;
-    std::size_t category_count;
-    std::size_t bonus_count;
-    std::size_t rolls_count;
+    std::size_t players_count = 0;
+    std::size_t dice_count = 0;
+    std::size_t category_count = 0;
+    std::size_t bonus_count = 0;
+    std::size_t rolls_count = 0;
     uint32_t enabled_rules = 0;
     std::vector<Categories> categories;
     std::vector<Bonus> bonus;

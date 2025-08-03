@@ -9,9 +9,6 @@
 
 #include "config/GameConfig/GameConfig.h"
 
-
-
-
 class Game {
 protected:
     struct PlayerInfo {
@@ -25,6 +22,14 @@ protected:
 
 public:
 
+    enum class GameResult : std::uint8_t {
+        UNKNOWN,
+        WIN,
+        SECOND_PLACE,
+        THIRD_PLACE,
+        LOSE
+    };
+
     virtual ~Game() = default;
 
     explicit Game(const GameConfig& config);
@@ -34,6 +39,8 @@ public:
     [[nodiscard]] virtual GameConfig::Categories get_categories(std::size_t player_index) const = 0;
 
     [[nodiscard]] virtual std::vector<GameConfig::ScoreType> get_score_table() const noexcept = 0;
+
+    [[nodiscard]] virtual GameResult get_player_result(std::size_t player_index) const noexcept = 0;
 
     virtual void toggle_dice(std::size_t player_index, std::size_t dice_index) = 0;
 

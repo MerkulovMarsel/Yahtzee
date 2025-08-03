@@ -13,6 +13,7 @@ void GameController::handleEvent(const sf::Event &event) {
             break;
         }
         case Config::Phase::GAME_PLAYING : {
+
             break;
         }
         case Config::Phase::GAME_OVER : {
@@ -26,6 +27,6 @@ void GameController::update(float dt) {
 }
 
 void GameController::render(sf::RenderWindow &window) {
-    // std::apply([&](const std::unique_ptr<GameObject>& object){object->render(window);},
-    //     objects );
+    std::apply([&](const std::unique_ptr<GameObject>& object){object->render(window);},
+        objects );
 }
