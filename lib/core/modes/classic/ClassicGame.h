@@ -5,6 +5,7 @@
 #ifndef SMALLCLASSICGAME_H
 #define SMALLCLASSICGAME_H
 #include "core/game.h"
+#include "exception/game/GameException.h"
 
 // PASHA YOU NEED TO DO
 
@@ -12,7 +13,7 @@ class ClassicGame final : public Game {
 public:
     ClassicGame(const GameConfig& config);
 
-    [[nodiscard]] std::vector<GameConfig::DiceValues> get_dices(std::size_t player_index) const override;
+    [[nodiscard]] std::vector<GameConfig::Dices> get_dices(std::size_t player_index) const override;
 
     [[nodiscard]] GameConfig::Categories get_categories(std::size_t player_index) const override;
 

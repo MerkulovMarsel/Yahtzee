@@ -14,7 +14,7 @@ protected:
     struct PlayerInfo {
         std::vector<GameConfig::ScoreType> category_scores;
         std::vector<GameConfig::Bonus> bonus_scores;
-        std::vector<GameConfig::DiceValues> dices;
+        std::vector<GameConfig::Dices> dices;
         std::size_t roll_count;
     };
 
@@ -32,11 +32,13 @@ public:
         LOSE
     };
 
+    std::size_t current_player;
+
     virtual ~Game() = default;
 
     explicit Game(const GameConfig& config);
 
-    [[nodiscard]] virtual std::vector<GameConfig::DiceValues> get_dices(std::size_t player_index) const = 0;
+    [[nodiscard]] virtual std::vector<GameConfig::Dices> get_dices(std::size_t player_index) const = 0;
 
     [[nodiscard]] virtual GameConfig::Categories get_categories(std::size_t player_index) const = 0;
 
