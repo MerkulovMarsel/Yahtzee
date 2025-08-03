@@ -11,14 +11,13 @@
 // good generator of the prime numbers
 static thread_local std::mt19937 rng(std::random_device{}());
 
-GameConfig::Dices ClassicGame::get_dices(std::size_t player_index) const {
+std::vector<GameConfig::DiceValues> ClassicGame::get_dices(std::size_t player_index) const {
     // текущие значения кубиков для указанного игрока
-    return players_[player_index].dices;
+    return players[player_index].dices;
 }
 
 void ClassicGame::toggle_dice(std::size_t player_index, std::size_t dice_index) {
-    // Переключить состояние кубика (заморозка/разморозка)
-    // Например, можно хранить флаги замороженных кубиков
+    // можно хранить флаги замороженных кубиков
 }
 
 void ClassicGame::roll(std::size_t player_index) {

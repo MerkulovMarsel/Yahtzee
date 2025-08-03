@@ -20,7 +20,7 @@ protected:
 
     using Players = std::vector<PlayerInfo>;
 
-    Players players_;  // info about players
+    Players players;  // info about players
 
 public:
 
@@ -36,7 +36,7 @@ public:
 
     explicit Game(const GameConfig& config);
 
-    [[nodiscard]] virtual GameConfig::Dices get_dices(std::size_t player_index) const = 0;
+    [[nodiscard]] virtual std::vector<GameConfig::DiceValues> get_dices(std::size_t player_index) const = 0;
 
     [[nodiscard]] virtual GameConfig::Categories get_categories(std::size_t player_index) const = 0;
 
