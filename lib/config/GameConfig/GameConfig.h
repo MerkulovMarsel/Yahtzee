@@ -14,7 +14,7 @@
 
 struct GameConfig {
     enum class DiceValues : std::uint8_t {
-        UNKNOW = 0,
+        UNKNOWN = 0,
         ONE = 1,
         TWO = 2,
         THREE = 3,
