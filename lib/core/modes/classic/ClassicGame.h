@@ -5,14 +5,14 @@
 #ifndef SMALLCLASSICGAME_H
 #define SMALLCLASSICGAME_H
 #include "core/game.h"
-
-// PASHA YOU NEED TO DO
+#include "exception/game/GameException.h"
+#include <random>
 
 class ClassicGame final : public Game {
 public:
     ClassicGame(const GameConfig& config);
 
-    [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
+    [[nodiscard]] std::vector<GameConfig::Dices> get_dices(std::size_t player_index) const override;
 
     [[nodiscard]] GameConfig::Categories get_categories(std::size_t player_index) const override;
 
@@ -29,6 +29,10 @@ public:
     bool is_game_over() const noexcept override;
 
     void special_event(std::size_t player_index, GameConfig::SpecialEvent event) override;
+
+private:
+    // good generator of the prime numbers
+    std::mt19937 rng;
 };
 
 
