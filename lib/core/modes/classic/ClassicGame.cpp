@@ -8,16 +8,16 @@
 #include <random>
 #include <bits/random.h>
 
-// good generator of the prime numbers
-static thread_local std::mt19937 rnd(std::random_device{}());
-
-ClassicGame::ClassicGame(const GameConfig &config) : Game(config) {
+ClassicGame::ClassicGame(const GameConfig &config)
+    : Game(config),
+      rng(std::random_device{}())
+{
     players.resize(config.players_count);
     current_player = 0;
 }
 
 void CheckOutOfRange(std::size_t player_index, std::size_t pl_count) {
-    if (player_index >= pl_count || player_index < 0) {
+    if (player_index >= pl_count) {
         throw GameException("Invalid player index: " + std::to_string(player_index));
     }
 }
@@ -41,16 +41,17 @@ std::vector<GameConfig::ScoreType> ClassicGame::get_score_table() const noexcept
 
         // Сумма по категориям
         for (auto score: player.category_scores) {
-            if (score != -1) total += score;
+            if (score.first != std::nullopt) {
+                total += score.first.value();
+            }
         }
 
         // бонусы
         for (auto bonus: player.bonus_scores) {
-            // !! TODO !!: oprator +()
-            total += bonus;
+            // total += (bonus.calc_score(players[player_index].category_scores) >= bonus.threshold) ? bonus.bonus : 0ull;
         }
 
-        scores.push_back(total);
+        scores.emplace_back(total);
     }
     return scores;
 }
@@ -59,7 +60,8 @@ void ClassicGame::toggle_dice(std::size_t player_index, std::size_t dice_index) 
 }
 
 void ClassicGame::roll(std::size_t player_index) {
-    // use rnd() mt19937
+    // use rng() mt19937
+    rng();
 }
 
 void ClassicGame::set_category(std::size_t player_index, std::size_t category_index) {
@@ -71,7 +73,7 @@ void ClassicGame::play(std::size_t player_index) {
 bool ClassicGame::is_game_over() const noexcept {
     for (const auto &player: players) {
         for (auto score: player.category_scores) {
-            if (score == -1) {
+            if (score.first == std::nullopt) {
                 return false;
             }
         }

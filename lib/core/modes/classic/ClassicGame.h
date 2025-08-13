@@ -6,8 +6,7 @@
 #define SMALLCLASSICGAME_H
 #include "core/game.h"
 #include "exception/game/GameException.h"
-
-// PASHA YOU NEED TO DO
+#include <random>
 
 class ClassicGame final : public Game {
 public:
@@ -30,6 +29,10 @@ public:
     bool is_game_over() const noexcept override;
 
     void special_event(std::size_t player_index, GameConfig::SpecialEvent event) override;
+
+private:
+    // good generator of the prime numbers
+    std::mt19937 rng;
 };
 
 

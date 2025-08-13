@@ -12,15 +12,17 @@
 class Game {
 protected:
     struct PlayerInfo {
-        std::vector<GameConfig::ScoreType> category_scores;
-        std::vector<GameConfig::Bonus> bonus_scores;
+        std::vector<GameConfig::CategoryPlayerInfo> category_scores;
+        std::vector<std::optional<GameConfig::Bonus>> bonus_scores;
         std::vector<GameConfig::Dices> dices;
         std::size_t roll_count;
     };
 
     using Players = std::vector<PlayerInfo>;
 
-    Players players;  // info about players
+    Players players; // info about players
+
+    std::size_t current_player; // only №
 
 public:
 
@@ -32,8 +34,6 @@ public:
         LOSE
     };
 
-    std::size_t current_player;
-
     virtual ~Game() = default;
 
     explicit Game(const GameConfig& config);
@@ -44,7 +44,7 @@ public:
 
     [[nodiscard]] virtual std::vector<GameConfig::ScoreType> get_score_table() const noexcept = 0;
 
-    [[nodiscard]] virtual GameResult get_player_result(std::size_t player_index) const noexcept = 0;
+    [[nodiscard]] virtual GameResult get_player_result(std::size_t player_index) const = 0;
 
     virtual void toggle_dice(std::size_t player_index, std::size_t dice_index) = 0;
 
