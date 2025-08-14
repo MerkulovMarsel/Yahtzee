@@ -4,29 +4,38 @@
 
 #include "GameController.h"
 
-#include "SFML/Graphics/Sprite.hpp"
+GameController::GameController() {}
 
 void GameController::handleEvent(const sf::Event &event) {
-    switch (config.phase) {
-        case Config::Phase::START_SETTING : {
+    switch (config.current_page) {
+        case Config::Page::START_SETTING : {
 
             break;
         }
-        case Config::Phase::GAME_PLAYING : {
+        case Config::Page::CONFIG_SETTINGS : {
 
             break;
         }
-        case Config::Phase::GAME_OVER : {
+        case Config::Page::GAME_PLAYING : {
+
+            break;
+        }
+        case Config::Page::GAME_OVER : {
             break;
         }
     }
 }
 
-void GameController::update(float dt) {
-
+void GameController::update(const float dt) {
+    std::apply([&](const std::unique_ptr<Object>& object){object->update(dt);},
+        objects );
 }
 
 void GameController::render(sf::RenderWindow &window) {
-    std::apply([&](const std::unique_ptr<GameObject>& object){object->render(window);},
+    std::apply([&](const std::unique_ptr<Object>& object) {
+        if  (object->page == config.current_page) {
+            object->render(window);
+        }
+    },
         objects );
 }

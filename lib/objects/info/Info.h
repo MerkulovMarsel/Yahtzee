@@ -1,16 +1,19 @@
 //
-// Created by Марсель on 25.07.2025.
+// Created by Марсель on 10.08.2025.
 //
 
-#ifndef INFORENDER_H
-#define INFORENDER_H
+#ifndef INFO_H
+#define INFO_H
+#include "objects/Object.h"
 
 
+class Info final : public Object {
+public:
+    Info() = delete;
 
-class Info {
-
+    void render(sf::RenderWindow &window) const override;
 };
 
 
 
-#endif //INFORENDER_H
+#endif //INFO_H

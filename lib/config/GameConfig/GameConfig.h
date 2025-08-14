@@ -22,7 +22,8 @@ struct GameConfig {
         FIVE = 5,
         SIX = 6
     };
-    using Dices = std::vector<std::pair<DiceValues, bool>>;
+    using DiceState = std::pair<DiceValues, bool>;
+    using Dices = std::vector<DiceState>;
 
     static constexpr std::size_t to_n(const DiceValues dice) {
         return static_cast<std::size_t>(dice);
@@ -122,7 +123,6 @@ struct GameConfig {
         ScoreType bonus;
         ScoreType threshold;
     };
-
 
     enum class GameRuleFlags : std::uint32_t {
         ASYNC_MODE = 0x01,
