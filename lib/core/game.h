@@ -15,6 +15,7 @@ protected:
         std::vector<GameConfig::ScoreType> category_scores;
         std::vector<GameConfig::Bonus> bonus_scores;
         std::vector<GameConfig::DiceValues> dices;
+        std::optional<std::size_t> chosen_category;
         std::size_t roll_count;
     };
 

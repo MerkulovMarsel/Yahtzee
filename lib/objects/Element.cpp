@@ -2,16 +2,15 @@
 // Created by Марсель on 06.08.2025.
 //
 
-#include "Object.h"
+#include "Element.h"
 
-#include "config/Config.h"
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
 
-std::shared_ptr<sf::Texture> Object::set_text_on_texture(const std::shared_ptr<sf::Texture> &base_texture,
-                                                          const std::string &text, const sf::Font &font) {
+std::shared_ptr<sf::Texture> set_text_on_texture(const std::shared_ptr<sf::Texture> &base_texture,
+                                                 const std::string &text, const sf::Font &font) {
     sf::RenderTexture texture_text;
     texture_text.create(base_texture->getSize().x, base_texture->getSize().y);
     texture_text.clear(sf::Color::Transparent);
@@ -38,3 +37,4 @@ std::shared_ptr<sf::Texture> Object::set_text_on_texture(const std::shared_ptr<s
 
     return std::make_shared<sf::Texture>(texture_text.getTexture());
 }
+

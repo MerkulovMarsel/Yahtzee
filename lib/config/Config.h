@@ -4,11 +4,10 @@
 
 #ifndef CONFIG_H
 #define CONFIG_H
-#include <cstdint>
+
+#include <memory>
 
 #include "GameConfig/GameConfig.h"
-#include "objects/background/BackGround.h"
-#include "objects/setting/SettingObjects.h"
 #include "SFML/Graphics/Texture.hpp"
 
 
@@ -51,6 +50,19 @@ namespace objects {
     CONST MAX_COUNT_DICE = 7ULL;
     CONST MAX_COUNT_CATEGORY = 6ULL;
 
+}
+
+namespace objects::coord {
+    CONST H = 1300;
+    CONST V = 900;
+
+    CONST MID = sf::Vector2f(H / 2, V / 2);
+}
+
+namespace objects::events {
+    enum class SettingsEvent {
+
+    };
 }
 
 struct Config {
@@ -123,9 +135,26 @@ struct Config {
     sf::Vector2f get_mode_scale(std::size_t mode_index) const;
     sf::Vector2f get_setting_scale(std::size_t setting_index) const;
 
+    static constexpr sf::Vector2f get_background_position() noexcept;
+
+    template <Page page>
+    std::shared_ptr<sf::Texture> get_background_texture() const {
+        if constexpr (page == Page::GAME_PLAYING) {
+            return std::make_shared<sf::Texture>(GAME_BOARD);
+        } else if constexpr (page == Page::GAME_OVER) {
+            return std::make_shared<sf::Texture>(GAME_OVER_BOARD);
+        }
+        return nullptr;
+    }
+
     Page current_page = Page::START_SETTING;
     GameConfig game_config;
 };
+
+constexpr sf::Vector2f Config::get_background_position() noexcept {
+    return objects::coord::MID;
+}
+
 
 
 #endif //CONFIG_H

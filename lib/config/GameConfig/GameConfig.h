@@ -68,6 +68,7 @@ struct GameConfig {
         CategoryCalcFunction calc;
         AvailableCategory type;
 
+
         explicit Category(const AvailableCategory category) :
             calc(get_calc_function(category)),
             type(category)

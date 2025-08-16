@@ -8,36 +8,30 @@
 
 #include "config/Config.h"
 #include "core/game.h"
-#include "objects/Object.h"
-#include "objects/background/BackGround.h"
-#include "objects/game/category/Category.h"
-#include "objects/game/dice/Dice.h"
-#include "objects/game/play/Play.h"
+#include "objects/Element.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 
-struct ObjectsHandler {
-    BackGround main_background;
-    BackGround game_over_background;
-    //
-    SettingObjects config_mode_open;
-    SettingObjects settings_mode_classic;
-    SettingObjects settings_mode_close;
-    //
-    std::array<Dice, objects::MAX_COUNT_DICE> dices;
-    std::array<Category, objects::MAX_COUNT_CATEGORY> categories;
 
-    Play play_button;
+
+
+struct ObjectsHandler {
 
 };
 
 
+struct GameState {
+    Config::Page current_page;
+
+};
+
 class GameController {
 public:
-    using Objects = std::array<std::unique_ptr<Object>, >;
+    using Objects = std::vector<std::unique_ptr<Element>>;
 private:
     std::unique_ptr<Game> game;
     Config config;
-    //ObjectsHandler objects_handler;
+    GameState state;
+    ObjectsHandler objects_handler;
     Objects objects;
 public:
 

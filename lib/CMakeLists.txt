@@ -26,23 +26,8 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         core/modes/coundown/CountDownGame.h
         core/modes/race/RaceGame.cpp
         core/modes/race/RaceGame.h
-        objects/setting/SettingObjects.cpp
-        objects/setting/SettingObjects.h
-        objects/background/BackGround.cpp
-        objects/background/BackGround.h
-        objects/game/GameObject.cpp
-        objects/game/GameObject.h
-        objects/Object.cpp
-        objects/game/dice/Dice.cpp
-        objects/game/dice/Dice.h
-        objects/game/play/Play.cpp
-        objects/game/play/Play.h
-        objects/game/category/Category.cpp
-        objects/game/category/Category.h
-        objects/info/Info.cpp
-        objects/info/Info.h
-        objects/game/roll/Roll.cpp
-        objects/game/roll/Roll.h
+        objects/Element.h
+        objects/Element.cpp
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

@@ -27,13 +27,13 @@ void GameController::handleEvent(const sf::Event &event) {
 }
 
 void GameController::update(const float dt) {
-    std::apply([&](const std::unique_ptr<Object>& object){object->update(dt);},
+    std::apply([&](const std::unique_ptr<Element>& object){object->update(dt);},
         objects );
 }
 
 void GameController::render(sf::RenderWindow &window) {
-    std::apply([&](const std::unique_ptr<Object>& object) {
-        if  (object->page == config.current_page) {
+    std::apply([&](const std::unique_ptr<Element>& object) {
+        if  (object->is_current_page(state.current_page)) {
             object->render(window);
         }
     },
