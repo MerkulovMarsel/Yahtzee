@@ -30,12 +30,12 @@ public:
 private:
     std::unique_ptr<Game> game;
     Config config;
-    GameState state;
+    GameState state{};
     ObjectsHandler objects_handler;
     Objects objects;
 public:
 
-    GameController();
+    explicit GameController(const char *argv0);
 
     void handleEvent(const sf::Event & event);
 

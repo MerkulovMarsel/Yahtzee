@@ -7,7 +7,7 @@
 
 class Application {
 public:
-    static void run();
+    static void run(const char* argv0);
 };
 
 #endif //APPLICATION_H

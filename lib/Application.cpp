@@ -10,13 +10,13 @@
 
 #include "GameController.h"
 
-void Application::run() {
+void Application::run(const char* argv0) {
 
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Yahtzee");
     sf::Clock frameClock;
     ImGui::SFML::Init(window);
 
-    auto gameController = std::make_unique<GameController>();
+    auto gameController = std::make_unique<GameController>(argv0);
     while (window.isOpen()) {
         sf::Event event{};
 

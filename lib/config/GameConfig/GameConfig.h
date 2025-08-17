@@ -44,7 +44,7 @@ struct GameConfig {
         return [target](Dices dices) {
             return std::accumulate(dices.begin(), dices.end(), ScoreType{0},
                 [target](ScoreType sum, auto val) {
-                    return sum + (val == target ? to_n(target) : 0);
+                    return sum + (val.first == target ? to_n(target) : 0);
                 });
         };
     }
@@ -80,9 +80,9 @@ struct GameConfig {
     };
 
     using CategoryPlayerInfo = std::pair<std::optional<ScoreType>, AvailableCategory>;
-    using Categories = std::vector<std::optional<ScoreType>>;
+    using Categories = std::vector<CategoryPlayerInfo>;
 
-    using BonusCalcFunction = std::function<ScoreType(const CategoryPlayerInfo&)>;
+    using BonusCalcFunction = std::function<ScoreType(const Categories&)>;
 
 
     enum class AvailableBonusCalcFUnction : std::uint8_t {
@@ -94,7 +94,7 @@ struct GameConfig {
     }
 
 
-    static ScoreType classic_border_bonus(const CategoryPlayerInfo& categories) {
+    static ScoreType classic_border_bonus(const Categories& categories) {
         ScoreType result = 0;
         for (const auto& [value,c] : categories) {
             if (value &&
