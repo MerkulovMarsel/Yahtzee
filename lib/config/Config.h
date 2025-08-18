@@ -8,6 +8,8 @@
 #include <memory>
 #include <filesystem>
 #include <stdexcept>
+#include <utility>
+
 #include "GameConfig/GameConfig.h"
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/Texture.hpp"
@@ -35,6 +37,8 @@ namespace elements::assets_filenames {
     CONST SQUARE_SETTING = "SquareSetting.png";
     CONST RECTANGLE_SETTING = "RectangleSetting.png";
     CONST CHANG_PAGE_BUTTON_SETTING = "ChangePageButton.png";
+    CONST SINGLE_PLAYER_BUTTON_SETTING = "SinglePlayerButton.png";
+    CONST ONE_VS_ONE_BUTTON = "OneVsOneButton.png";
 
     CONST CLASSIC_GAME_MODE_BUTTON = "ClassicGameModeButton.png";
     CONST COUNTDOWN_GAME_MODE_BUTTON = "CountDownGameModeButton.png";
@@ -54,6 +58,7 @@ namespace elements::assets_filenames {
     CONST ACTIVE_CATEGORY = "ActiveCategory.png";
     CONST UNACTIVE_CATEGORY = "UnactiveCategory.png";
 
+
     // Элементы подсчета очков
     CONST SUM1 = "SUM1.png";
     CONST SUM2 = "SUM2.png";
@@ -68,6 +73,9 @@ namespace elements {
 
     CONST MAX_COUNT_DICE = 7ULL;
     CONST MAX_COUNT_CATEGORY = 6ULL;
+
+    inline sf::Color TOUCH_COLOR = sf::Color::Yellow;
+    inline sf::Color NORMAL_COLOR = sf::Color::White;
 }
 
 namespace elements::coord {
@@ -84,6 +92,10 @@ namespace elements::coord {
 
     CONST CHOOSE_MODE_BUTTON_INDENT = 30;
     CONST CHOOSE_MODE_BUTTON_HEIGHT_OF_MODES = 100;
+
+    CONST PLAYER_COUNT_BUTTON_Y = 160;
+    CONST PLAYER_COUNT_BUTTON_INDENT = 240;
+    CONST PLAYER_COUNT_BUTTON_SIZE_X = 186;
 };
 
 namespace elements::info {
@@ -116,6 +128,11 @@ struct Config {
         RACE,
         SPEED,
         TEST
+    };
+
+    enum class PlayerCount : std::uint8_t {
+        SINGLE = 1,
+        ONE_VS_ONE = 2
     };
 
     explicit Config(const char* argv0) {
@@ -176,6 +193,8 @@ private:
                    load_texture(SQUARE_SETTING, elements::assets_filenames::SQUARE_SETTING) &&
                    load_texture(RECTANGLE_SETTING, elements::assets_filenames::RECTANGLE_SETTING) &&
                    load_texture(CHANGE_PAGE_BUTTON, elements::assets_filenames::CHANG_PAGE_BUTTON_SETTING) &&
+                   load_texture(SINGLE_PLAYER_BUTTON, elements::assets_filenames::SINGLE_PLAYER_BUTTON_SETTING) &&
+                   load_texture(ONE_VS_ONE_BUTTON, elements::assets_filenames::ONE_VS_ONE_BUTTON) &&
                    load_texture(SUM1, elements::assets_filenames::SUM1) &&
                    load_texture(SUM2, elements::assets_filenames::SUM2) &&
                    load_texture(SUM3, elements::assets_filenames::SUM3) &&
@@ -219,6 +238,8 @@ public:
     std::shared_ptr<sf::Texture> SQUARE_SETTING = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> RECTANGLE_SETTING = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> CHANGE_PAGE_BUTTON = std::make_shared<sf::Texture>();
+    std::shared_ptr<sf::Texture> SINGLE_PLAYER_BUTTON = std::make_shared<sf::Texture>();
+    std::shared_ptr<sf::Texture> ONE_VS_ONE_BUTTON = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM1 = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM2 = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM3 = std::make_shared<sf::Texture>();
@@ -236,6 +257,7 @@ public:
     static sf::Vector2f get_background_position() noexcept;
     static sf::Vector2f get_set_game_mode_position(GameMode mode) noexcept;
     static sf::Vector2f get_change_page_button_position() noexcept;
+    static sf::Vector2f get_count_player_button_position(PlayerCount type) noexcept;
 
     std::shared_ptr<sf::Texture> get_change_page_button_texture() const {
         return CHANGE_PAGE_BUTTON;
@@ -274,12 +296,23 @@ public:
         }
     }
 
+    std::shared_ptr<sf::Texture> get_player_count_button_texture(const PlayerCount type) const {
+        switch (type) {
+            case PlayerCount::SINGLE : {
+                return SINGLE_PLAYER_BUTTON;
+            }
+            case PlayerCount::ONE_VS_ONE: {
+                return ONE_VS_ONE_BUTTON;
+            }
+        }
+        std::unreachable();
+    }
+
     static std::string get_info_text(elements::info::TextTypes type) noexcept;
     static unsigned int get_info_text_size(elements::info::TextTypes type) noexcept;
 
 
     GameConfig game_config;
-    GameConfig::GameState game_state;
     Page current_page = Page::START_SETTING;
 };
 
@@ -312,6 +345,22 @@ inline sf::Vector2f Config::get_set_game_mode_position(GameMode mode) noexcept {
 inline sf::Vector2f Config::get_change_page_button_position() noexcept {
     return {static_cast<float>(elements::coord::CHANGE_PAGE_BUTTON_X) ,
         static_cast<float>(elements::coord::CHANGE_PAGE_BUTTON_Y)};
+}
+
+inline sf::Vector2f Config::get_count_player_button_position(const PlayerCount type) noexcept {
+    switch (type) {
+        case PlayerCount::SINGLE : {
+            return {static_cast<float>(elements::coord::PLAYER_COUNT_BUTTON_INDENT),
+                static_cast<float>(elements::coord::PLAYER_COUNT_BUTTON_Y)};
+        }
+        case PlayerCount::ONE_VS_ONE : {
+            return {static_cast<float>(elements::coord::X     -
+                    elements::coord::PLAYER_COUNT_BUTTON_INDENT  -
+                    elements::coord::PLAYER_COUNT_BUTTON_SIZE_X),
+                static_cast<float>(elements::coord::PLAYER_COUNT_BUTTON_Y)};
+        }
+    }
+    std::unreachable();
 }
 
 inline std::string Config::get_info_text(elements::info::TextTypes type) noexcept {

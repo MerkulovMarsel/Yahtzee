@@ -169,7 +169,7 @@ struct GameConfig {
     struct GameState {
         Categories categories;
         Bonuses bonus;
-        std::size_t players_count = 0;
+        std::size_t players_count =  1;
         std::size_t dice_count = 0;
         std::size_t category_count = 0;
         std::size_t bonus_count = 0;

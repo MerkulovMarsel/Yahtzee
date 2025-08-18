@@ -231,6 +231,10 @@ public:
     [[nodiscard]] bool is_enable(const State& state) const noexcept {
         return this->enable_checker(state);
     }
+
+    [[nodiscard]] bool is_active(const State& state) const noexcept {
+        return this->check_activity(state);
+    }
 };
 
 template <Config::Page page, typename State>
@@ -255,7 +259,7 @@ public:
 };
 
 template <Config::Page page, typename State>
-class DynamicTouchableElement final : public Element,
+class DynamicTouchableElement : public Element,
                                       public TouchableElement<State> {
     using UpdateFunction = std::function<void(sf::Sprite&, const State&, bool)>;
 
@@ -263,7 +267,7 @@ class DynamicTouchableElement final : public Element,
 
 public:
     bool enable(const Config::Page current_page) const noexcept override {
-        return current_page == page && this->enable_checker(this->get_state());
+        return current_page == page && this->is_enable(this->get_state());
     }
 
     DynamicTouchableElement(
@@ -282,9 +286,9 @@ public:
     void update(const float dt) override {
         Element::update(dt);
 
-        if (update_function && this->state) {
+        if (update_function && this->get_state()) {
             const State& state = this->get_state();
-            bool is_active = this->check_activity(state);
+            bool is_active = this->is_active(state);
             update_function(this->get_sprite(), state, is_active);
         }
     }

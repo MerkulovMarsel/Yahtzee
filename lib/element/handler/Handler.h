@@ -10,7 +10,6 @@
 #include "core/modes/speed/SpeedGame.h"
 #include "core/modes/test/TestGame.h"
 #include "element/Element.h"
-#include "src/SFML/Window/Win32/CursorImpl.hpp"
 
 
 namespace elements {
@@ -75,10 +74,28 @@ namespace elements {
     template<GameMode mode>
     void set_game_mode(StartGameInfo& game_info);
 
+    template<Config::PlayerCount count>
+    class SetPlayerCountButton final : public DynamicTouchableElement<Page::CONFIG_SETTINGS, std::size_t> {
+    public:
+        explicit SetPlayerCountButton(Config& config) :
+        DynamicTouchableElement(
+            config.game_config.game_state.players_count,
+            *config.get_player_count_button_texture(count),
+            Config::get_count_player_button_position(count),
+            [] (std::size_t& current_count) {current_count = static_cast<std::size_t>(count); },
+            [](sf::Sprite& sprite, const std::size_t& current_count, bool) {
+                if (current_count == static_cast<std::size_t>(count)) {
+                    sprite.setColor(TOUCH_COLOR);
+                } else {
+                    sprite.setColor(NORMAL_COLOR);
+                }
+            }) {}
+    };
 
+    using SinglePlayerButton = SetPlayerCountButton<Config::PlayerCount::SINGLE>;
+    using OneVsOnePlayerButton = SetPlayerCountButton<Config::PlayerCount::ONE_VS_ONE>;
 
-
-
+    
 
 
     // definitions
@@ -120,7 +137,8 @@ struct Handler {
     elements::OpenConfigSettingsFromStartSettingButton config_from_start_button;
     elements::BackToStartSettingsFromConfigSettingsButton back_to_start_button;
 
-
+    elements::SinglePlayerButton single_player_button;
+    elements::OneVsOnePlayerButton one_vs_one_player_button;
 
     explicit Handler(Config& config, Elements& elements) :
         start_settings_back_ground(config),
@@ -128,14 +146,18 @@ struct Handler {
         game_back_ground(config),
         game_over_back_ground(config),
         config_from_start_button(config),
-        back_to_start_button(config){
+        back_to_start_button(config),
+        single_player_button(config),
+        one_vs_one_player_button(config){
         elements.reserve(6);
-        elements.push_back(&start_settings_back_ground);
-        elements.push_back(&config_settings_back_ground);
-        elements.push_back(&game_back_ground);
-        elements.push_back(&game_over_back_ground);
-        elements.push_back(&config_from_start_button);
-        elements.push_back(&back_to_start_button);
+        elements.emplace_back(&start_settings_back_ground);
+        elements.emplace_back(&config_settings_back_ground);
+        elements.emplace_back(&game_back_ground);
+        elements.emplace_back(&game_over_back_ground);
+        elements.emplace_back(&config_from_start_button);
+        elements.emplace_back(&back_to_start_button);
+        elements.emplace_back(&single_player_button);
+        elements.emplace_back(&one_vs_one_player_button);
     }
 
 };
