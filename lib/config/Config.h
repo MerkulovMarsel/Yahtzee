@@ -46,6 +46,7 @@ namespace elements::assets_filenames {
     CONST GAME_BOARD = "GameBoard.png";
     CONST GAME_OVER_BOARD = "GameOverBoard.png";
     CONST SETTINGS_BOARD = "SettingsBoard.png";
+    CONST CONFIG_BOARD = "ConfigBoard.png";
     CONST ACTIVE_PLAY_BUTTON = "ActivePlay.png";
     CONST UNACTIVE_PLAY_BUTTON = "UnactivePlay.png";
     CONST ACTIVE_ROLL_BUTTON = "ActiveRoll.png";
@@ -77,9 +78,12 @@ namespace elements::coord {
     CONST MODE_BUTTON_START_X = 300;
     CONST MODE_BUTTON_END_X = X - MODE_BUTTON_START_X;
 
-    CONST CHANGE_PAGE_BUTTON_INDENT = 50;
+    CONST CHANGE_PAGE_BUTTON_INDENT = 30;
     CONST CHANGE_PAGE_BUTTON_X = CHANGE_PAGE_BUTTON_INDENT;
     CONST CHANGE_PAGE_BUTTON_Y = CHANGE_PAGE_BUTTON_INDENT;
+
+    CONST CHOOSE_MODE_BUTTON_INDENT = 30;
+    CONST CHOOSE_MODE_BUTTON_HEIGHT_OF_MODES = 100;
 };
 
 namespace elements::info {
@@ -157,6 +161,7 @@ private:
                    load_texture(GAME_BOARD, elements::assets_filenames::GAME_BOARD) &&
                    load_texture(GAME_OVER_BOARD, elements::assets_filenames::GAME_OVER_BOARD) &&
                    load_texture(SETTINGS_BOARD, elements::assets_filenames::SETTINGS_BOARD) &&
+                   load_texture(CONFIG_BOARD, elements::assets_filenames::CONFIG_BOARD) &&
                    load_texture(CLASSIC_MODE_BUTTON, elements::assets_filenames::CLASSIC_GAME_MODE_BUTTON) &&
                    load_texture(COUNTDOWN_MODE_BUTTON, elements::assets_filenames::COUNTDOWN_GAME_MODE_BUTTON) &&
                    load_texture(RACE_MODE_BUTTON, elements::assets_filenames::RACE_GAME_MODE_BUTTON) &&
@@ -199,6 +204,7 @@ public:
     std::shared_ptr<sf::Texture> GAME_BOARD = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> GAME_OVER_BOARD = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SETTINGS_BOARD = std::make_shared<sf::Texture>();
+    std::shared_ptr<sf::Texture> CONFIG_BOARD = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> CLASSIC_MODE_BUTTON = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> COUNTDOWN_MODE_BUTTON = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> RACE_MODE_BUTTON = std::make_shared<sf::Texture>();
@@ -242,6 +248,9 @@ public:
         if (page == Page::GAME_OVER) {
             return GAME_OVER_BOARD;
         }
+        if (page == Page::CONFIG_SETTINGS) {
+            return CONFIG_BOARD;
+        }
         return SETTINGS_BOARD;
     }
 
@@ -265,14 +274,30 @@ public:
         }
     }
 
-    std::string get_info_text(elements::info::TextTypes type) const noexcept;
+    static std::string get_info_text(elements::info::TextTypes type) noexcept;
     static unsigned int get_info_text_size(elements::info::TextTypes type) noexcept;
 
+
     GameConfig game_config;
+    GameConfig::GameState game_state;
+    Page current_page = Page::START_SETTING;
 };
 
+inline sf::Vector2f Config::get_info_text_position(const elements::info::TextTypes type) noexcept {
+    switch (type) {
+        case elements::info::TextTypes::CHOSE_GAME_MODE : {
+            return {static_cast<float>(elements::coord::CHOOSE_MODE_BUTTON_INDENT),
+                static_cast<float>(elements::coord::MODE_BUTTON_Y
+                    - elements::coord::CHOOSE_MODE_BUTTON_HEIGHT_OF_MODES)};
+        }
+        default: {
+            throw std::invalid_argument("Invalid info text type");
+        }
+    }
+}
+
 inline sf::Vector2f Config::get_background_position() noexcept {
-    return {static_cast<float>(elements::coord::X) / 2, static_cast<float>(elements::coord::Y) / 2};
+    return {0.f, 0.f};
 }
 
 inline sf::Vector2f Config::get_set_game_mode_position(GameMode mode) noexcept {
@@ -287,6 +312,17 @@ inline sf::Vector2f Config::get_set_game_mode_position(GameMode mode) noexcept {
 inline sf::Vector2f Config::get_change_page_button_position() noexcept {
     return {static_cast<float>(elements::coord::CHANGE_PAGE_BUTTON_X) ,
         static_cast<float>(elements::coord::CHANGE_PAGE_BUTTON_Y)};
+}
+
+inline std::string Config::get_info_text(elements::info::TextTypes type) noexcept {
+    switch (type) {
+        case elements::info::TextTypes::CHOSE_GAME_MODE : {
+            return "Choose Game Mode:";
+        }
+        default: {
+            throw std::invalid_argument("Invalid info text type");
+        }
+    }
 }
 
 #undef CONST

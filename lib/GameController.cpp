@@ -8,7 +8,6 @@
 #include <ranges>
 
 GameController::GameController(const char* argv0) : config(argv0), element_handler(config, elements) {
-
 }
 
 void GameController::handleEvent(const sf::Event& event) {
@@ -20,7 +19,7 @@ void GameController::handleEvent(const sf::Event& event) {
     );
 
     for (auto & obj : std::ranges::reverse_view(elements)) {
-        if (!obj->enable(current_page) ) { continue; }
+        if (!obj->enable(config.current_page) ) { continue; }
 
         if (!obj->get_sprite_bounds().contains(mouse_pos)) { continue; }
 
@@ -38,7 +37,7 @@ void GameController::update(const float dt) {
 
 void GameController::render(sf::RenderWindow &window) {
     std::ranges::for_each(elements, [&](const auto& object) {
-    if (object->enable(current_page)) {
+    if (object->enable(config.current_page)) {
         object->render(window);
     }
 });

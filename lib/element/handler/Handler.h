@@ -32,21 +32,21 @@ namespace elements {
     using GameBackGround            = BackGround<Page::GAME_PLAYING>;
     using GameOverBackGround        = BackGround<Page::GAME_OVER>;
 
-    template<TextTypes text_types>
-    class InfoTextElement final : public StaticElement<static_cast<Page>(text_types)> {
-    public:
-        explicit InfoTextElement(const Config& config, const sf::Vector2f& position) :
-        StaticElement<static_cast<Page>(text_types)>(
-                create_text_texture(Config::get_info_text(text_types),
-                config.font, Config::get_info_text_size(text_types)), position) {}
-    };
+    // template<TextTypes text_type>
+    // class InfoTextElement final : public StaticElement<static_cast<Page>(text_type)> {
+    // public:
+    //     explicit InfoTextElement(const Config& config) :
+    //     StaticElement<static_cast<Page>(text_type)>(
+    //             , config.get_info_text_position(text_type)) {}
+    // };
 
 
     template<Page page_from, Page page_to>
     class PageChangerButton final : public StaticTouchableElement<page_from, Page> {
     public:
-        explicit PageChangerButton(const Config& config) :
+        explicit PageChangerButton(Config& config) :
         StaticTouchableElement<page_from, Page>(
+            config.current_page,
             *config.get_change_page_button_texture(),
             Config::get_change_page_button_position(),
             [](Page& page) { if (page == page_from) { page = page_to; } }
@@ -58,14 +58,14 @@ namespace elements {
 
 
 
-    using ChooseGameMoodTextElement      = InfoTextElement<TextTypes::CHOSE_GAME_MODE>;
-    using SettingHeadTextElement         = InfoTextElement<TextTypes::SETTING_HEAD>;
-    using PLayerCountTextElement         = InfoTextElement<TextTypes::PLAYER_COUNT>;
-    using DiceCountTextElement           = InfoTextElement<TextTypes::DICE_COUNT>;
-    using RollCountTextElement           = InfoTextElement<TextTypes::ROLL_COUNT>;
-    using CategoriesTextElement          = InfoTextElement<TextTypes::CATEGORIES>;
-    using PlayersNamesTextElement        = InfoTextElement<TextTypes::PLAYERS_NAMES>;
-    using GameOverPlayersNameTextElement = InfoTextElement<TextTypes::GAME_OVER_PLAYERS_NAMES>;
+    // using ChooseGameMoodTextElement      = InfoTextElement<TextTypes::CHOSE_GAME_MODE>;
+    // using SettingHeadTextElement         = InfoTextElement<TextTypes::SETTING_HEAD>;
+    // using PLayerCountTextElement         = InfoTextElement<TextTypes::PLAYER_COUNT>;
+    // using DiceCountTextElement           = InfoTextElement<TextTypes::DICE_COUNT>;
+    // using RollCountTextElement           = InfoTextElement<TextTypes::ROLL_COUNT>;
+    // using CategoriesTextElement          = InfoTextElement<TextTypes::CATEGORIES>;
+    // using PlayersNamesTextElement        = InfoTextElement<TextTypes::PLAYERS_NAMES>;
+    // using GameOverPlayersNameTextElement = InfoTextElement<TextTypes::GAME_OVER_PLAYERS_NAMES>;
 
 
 
@@ -120,13 +120,15 @@ struct Handler {
     elements::OpenConfigSettingsFromStartSettingButton config_from_start_button;
     elements::BackToStartSettingsFromConfigSettingsButton back_to_start_button;
 
-    explicit Handler(const Config& config, Elements& elements) :
+
+
+    explicit Handler(Config& config, Elements& elements) :
         start_settings_back_ground(config),
         config_settings_back_ground(config),
         game_back_ground(config),
         game_over_back_ground(config),
         config_from_start_button(config),
-        back_to_start_button(config) {
+        back_to_start_button(config){
         elements.reserve(6);
         elements.push_back(&start_settings_back_ground);
         elements.push_back(&config_settings_back_ground);

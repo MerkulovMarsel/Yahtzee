@@ -13,16 +13,12 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
-
-
-
 class GameController {
     std::unique_ptr<Game> game;
     Config config;
-    GameConfig::GameState state{};
     Handler::Elements elements;
     Handler element_handler;
-    Config::Page current_page = Config::Page::START_SETTING;
+
 public:
 
     explicit GameController(const char *argv0);

@@ -181,6 +181,8 @@ class StateHandlerElement {
 public:
     virtual ~StateHandlerElement() = default;
 
+    StateHandlerElement(State& state) : state(&state) {}
+
     void set_state(State& new_state) noexcept {
         state = &new_state;
     }
@@ -211,12 +213,14 @@ private:
     EnableChecker enable_checker;
 public:
     explicit TouchableElement(
+                    State& state,
                     TouchCallback touch_cb,
                     CheckActivity check_active = [](const State&){ return true; },
                     EnableChecker enable_checker = [](const State&){ return true; })
-        : touch_callback(std::move(touch_cb))
-        , check_activity(std::move(check_active))
-        , enable_checker(std::move(enable_checker)){}
+        : StateHandlerElement<State>(state), touch_callback(std::move(touch_cb))
+          , check_activity(std::move(check_active))
+          , enable_checker(std::move(enable_checker)) {
+    }
 
     void touch() override {
         if (touch_callback && check_activity(this->get_state())) {
@@ -238,6 +242,7 @@ public:
     }
 
     StaticTouchableElement(
+        State& state,
         const sf::Texture& texture,
         const sf::Vector2f& position,
         typename TouchableElement<State>::TouchCallback touch_cb,
@@ -245,7 +250,7 @@ public:
         typename TouchableElement<State>::EnableChecker  enable_checker = [](const State&){ return true; },
         const sf::Vector2f& scale = {1.f, 1.f})
         : StaticUpdateElement(texture, position, scale)
-        , TouchableElement<State>(std::move(touch_cb), std::move(check_active), std::move(enable_checker)) {}
+        , TouchableElement<State>(state, std::move(touch_cb), std::move(check_active), std::move(enable_checker)) {}
 
 };
 
@@ -262,6 +267,7 @@ public:
     }
 
     DynamicTouchableElement(
+        State& state,
         const sf::Texture& texture,
         const sf::Vector2f& position,
         typename TouchableElement<State>::TouchCallback touch_cb,
@@ -270,7 +276,7 @@ public:
         typename TouchableElement<State>::EnableChecker enable_checker = [](const State&){ return true; },
         const sf::Vector2f& scale = {1.f, 1.f})
         : Element(texture, position, scale)
-        , TouchableElement<State>(std::move(touch_cb), std::move(check_active), std::move(enable_checker))
+        , TouchableElement<State>(state, std::move(touch_cb), std::move(check_active), std::move(enable_checker))
         , update_function(std::move(update_func)) {}
 
     void update(const float dt) override {
