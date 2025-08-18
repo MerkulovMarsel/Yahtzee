@@ -4,13 +4,18 @@
 
 #ifndef SMALLCLASSICGAME_H
 #define SMALLCLASSICGAME_H
+#include "config/Config.h"
 #include "core/game.h"
 
 // PASHA YOU NEED TO DO
 
 class ClassicGame final : public Game {
 public:
-    ClassicGame(const GameConfig& config);
+    explicit ClassicGame(const GameConfig::GameState& state);
+
+    explicit ClassicGame(Config::Page get);
+
+    [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
 

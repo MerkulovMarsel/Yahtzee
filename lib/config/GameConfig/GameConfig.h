@@ -22,7 +22,9 @@ struct GameConfig {
         FIVE = 5,
         SIX = 6
     };
+
     using DiceState = std::pair<DiceValues, bool>;
+
     using Dices = std::vector<DiceState>;
 
     static constexpr std::size_t to_n(const DiceValues dice) {
@@ -33,23 +35,24 @@ struct GameConfig {
 
 
     enum class AvailableCategory : std::uint8_t {
-        // Simple for start
         SUM_1,SUM_2,SUM_3,SUM_4,SUM_5,SUM_6,
     };
 
     using CategoryCalcFunction = std::function<ScoreType(Dices)>;
 
 
-    static CategoryCalcFunction make_sum_function(DiceValues target) {
-        return [target](Dices dices) {
+    template<DiceValues target>
+    static constexpr CategoryCalcFunction make_sum_function() {
+        return [](Dices dices) {
             return std::accumulate(dices.begin(), dices.end(), ScoreType{0},
-                [target](ScoreType sum, auto val) {
+                [](ScoreType sum, auto val) {
                     return sum + (val.first == target ? to_n(target) : 0);
                 });
         };
     }
 
-    static CategoryCalcFunction get_calc_function(const AvailableCategory category) {
+    template<AvailableCategory category>
+    static constexpr CategoryCalcFunction get_calc_function() {
         switch (category) {
             case AvailableCategory::SUM_1:
             case AvailableCategory::SUM_2:
@@ -57,39 +60,60 @@ struct GameConfig {
             case AvailableCategory::SUM_4:
             case AvailableCategory::SUM_5:
             case AvailableCategory::SUM_6:
-                return make_sum_function(static_cast<DiceValues>(category));
+                return make_sum_function<static_cast<DiceValues>(category)>();
             default:
                 throw
                 ConfigException(ConfigException::ExceptionType::NO_IMPLEMENTATION_CATEGORY_CALC_FUNCTION);
         }
     }
 
-    struct Category {
-        CategoryCalcFunction calc;
-        AvailableCategory type;
+    template<AvailableCategory category>
+    static constexpr bool is_classic_category() {
+        switch (category) {
+            default:
+                return true;
+        }
+    }
 
+    class CategoryBase {
+        std::optional<ScoreType> value ;
+    public:
+        virtual ~CategoryBase() = default;
 
-        explicit Category(const AvailableCategory category) :
-            calc(get_calc_function(category)),
-            type(category)
-        {}
+        virtual ScoreType operator()(const Dices& dices) const = 0;
 
-        ScoreType operator()(const Dices& dices) const {
+        std::optional<ScoreType> get_value() const noexcept {
+            return value ;
+        }
+
+        void fix(const Dices& dices) noexcept {
+            value = this->operator()(dices) ;
+        }
+    };
+
+    template<AvailableCategory category>
+    struct Category final : CategoryBase {
+
+        static constexpr CategoryCalcFunction calc = get_calc_function<category>();
+        std::optional<ScoreType> value = std::nullopt;
+        bool enabled = is_classic_category<category>();
+
+        ScoreType operator()(const Dices& dices) const override {
             return calc(dices);
         }
     };
 
-    using CategoryPlayerInfo = std::pair<std::optional<ScoreType>, AvailableCategory>;
-    using Categories = std::vector<CategoryPlayerInfo>;
+    using CategoryState = std::pair<AvailableCategory, bool>;
+    using Categories = std::vector<std::pair<std::optional<ScoreType>, AvailableCategory>>;
 
     using BonusCalcFunction = std::function<ScoreType(const Categories&)>;
 
 
-    enum class AvailableBonusCalcFUnction : std::uint8_t {
+    enum class AvailableBonus : std::uint8_t {
         CLASSIC_BONUS_63 = 63
     };
 
-    static constexpr std::size_t to_n(const AvailableBonusCalcFUnction dice) {
+    static constexpr std::size_t to_n(const AvailableBonus dice) {
         return static_cast<std::size_t>(dice);
     }
 
@@ -110,20 +134,27 @@ struct GameConfig {
         return result;
     }
 
-    static BonusCalcFunction get_bonus_function(const AvailableBonusCalcFUnction bonus) {
+    static BonusCalcFunction get_bonus_function(const AvailableBonus bonus) {
         switch (bonus) {
-            case AvailableBonusCalcFUnction::CLASSIC_BONUS_63:
+            case AvailableBonus::CLASSIC_BONUS_63:
                 return classic_border_bonus;
             default:
                 throw ConfigException(ConfigException::ExceptionType::NO_IMPLEMENTATION_BONUS_CALC_FUNCTION);
         }
     }
 
-    struct Bonus {
+    struct BonusState {
         BonusCalcFunction calc_score;
         ScoreType bonus;
         ScoreType threshold;
+        bool enabled;
+
+        BonusState() {
+
+        }
     };
+
+    using Bonuses = std::vector<AvailableBonus>;
 
     enum class GameRuleFlags : std::uint32_t {
         ASYNC_MODE = 0x01,
@@ -132,21 +163,27 @@ struct GameConfig {
 
 
     bool is_rule_enabled(const GameRuleFlags rule) const {
-        return (enabled_rules & static_cast<uint32_t>(rule)) != 0u;
+        return (game_state.enabled_rules & static_cast<uint32_t>(rule)) != 0u;
     }
 
-    std::size_t players_count = 0;
-    std::size_t dice_count = 0;
-    std::size_t category_count = 0;
-    std::size_t bonus_count = 0;
-    std::size_t rolls_count = 0;
-    uint32_t enabled_rules = 0;
-    std::vector<Categories> categories;
-    std::vector<Bonus> bonus;
+    struct GameState {
+        Categories categories;
+        Bonuses bonus;
+        std::size_t players_count = 0;
+        std::size_t dice_count = 0;
+        std::size_t category_count = 0;
+        std::size_t bonus_count = 0;
+        std::size_t rolls_count = 0;
+        uint32_t enabled_rules = 0;
+    };
+
+    GameState game_state;
+
 
     enum SpecialEvent : std::uint8_t {
         STOP_PLAYING_EVENT
     };
+
 };
 
 #endif //GAMECONFIG_H

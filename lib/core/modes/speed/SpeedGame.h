@@ -13,9 +13,11 @@
 
 class SpeedGame final : public Game {
 public:
-    SpeedGame(const GameConfig& config, std::time_t timer);
+    explicit SpeedGame(GameConfig::GameState const &state);
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
+
+    [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
 
     [[nodiscard]] GameConfig::Categories get_categories(std::size_t player_index) const override;
 

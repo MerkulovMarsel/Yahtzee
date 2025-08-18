@@ -1,26 +1,24 @@
 //
-// Created by Марсель on 03.08.2025.
+// Created by Марсель on 17.08.2025.
 //
 
-#ifndef COUNTDOWNGAME_H
-#define COUNTDOWNGAME_H
+#ifndef TESTGAME_H
+#define TESTGAME_H
 #include "core/game.h"
 
-// игра с определенным количеством ходов
 
-class CountDownGame final : public Game {
+class TestGame final : public Game{
+
 public:
-    explicit CountDownGame(GameConfig::GameState const &state);
-
-    [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
-
-    CountDownGame(const GameConfig& config, std::size_t steps_count);
+    explicit TestGame(const GameConfig::GameState& state);
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;
 
     [[nodiscard]] GameConfig::Categories get_categories(std::size_t player_index) const override;
 
     [[nodiscard]] std::vector<GameConfig::ScoreType> get_score_table() const noexcept override;
+
+    [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
 
     void toggle_dice(std::size_t player_index, std::size_t dice_index) override;
 
@@ -35,6 +33,4 @@ public:
     void special_event(std::size_t player_index, GameConfig::SpecialEvent event) override;
 };
 
-
-
-#endif //COUNTDOWNGAME_H
+#endif //TESTGAME_H

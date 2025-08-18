@@ -10,6 +10,10 @@
 
 class RaceGame final : public Game {
 public:
+    explicit RaceGame(GameConfig::GameState const &state);
+
+    [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
+
     RaceGame(const GameConfig& config, GameConfig::ScoreType target);
 
     [[nodiscard]] GameConfig::Dices get_dices(std::size_t player_index) const override;

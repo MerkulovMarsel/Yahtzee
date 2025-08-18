@@ -13,20 +13,32 @@
 
 // Это базовый класс всех объектов, которые рисуются
 
-static std::shared_ptr<sf::Texture> set_text_on_texture(const std::shared_ptr<sf::Texture> &base_texture,
-                                                     const std::string &text, const sf::Font& font);
-
 
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 
+static std::shared_ptr<sf::Texture> set_text_on_texture(
+    const std::shared_ptr<sf::Texture>& base_texture,
+    const std::string& text,
+    const sf::Font& font,
+    unsigned int char_size = elements::info::STANDARD_TEXT_SIZE,
+    const sf::Color& text_color = sf::Color::White
+);
+
+static std::shared_ptr<sf::Texture> create_text_texture(
+    const std::string& text,
+    const sf::Font& font,
+    unsigned int char_size = elements::info::STANDARD_TEXT_SIZE,
+    const sf::Color& text_color = sf::Color::White,
+    const sf::Color& background_color = sf::Color::Transparent
+);
 
 class Element {
     sf::Sprite sprite;
 
-    // Система анимаций
     struct Animator {
         struct Animation {
             std::vector<sf::IntRect> frames;
@@ -84,15 +96,19 @@ class Element {
 public:
     virtual ~Element() = default;
 
+    Element() = delete;
+
     explicit Element(
         const sf::Texture& texture,
         const sf::Vector2f& position,
-        const sf::Vector2f& scale = {1.f, 1.f}) : sprite(texture) {
+        const sf::Vector2f& scale) : sprite(texture) {
         set_position(position);
         set_scale(scale);
     }
 
     [[nodiscard]] sf::Sprite& get_sprite() noexcept { return sprite; }
+
+    [[nodiscard]] sf::FloatRect get_sprite_bounds() const noexcept { return sprite.getGlobalBounds(); }
 
     void set_texture(const sf::Texture& new_texture) noexcept {
         sprite.setTexture(new_texture, true);
@@ -110,7 +126,7 @@ public:
         sprite.setColor(new_color);
     }
 
-    virtual bool is_current_page(Config::Page current_page) const noexcept = 0;
+    virtual bool enable(Config::Page current_page) const noexcept = 0;
 
     void render(sf::RenderTarget& window) const {
         window.draw(sprite);
@@ -146,9 +162,14 @@ public:
 };
 
 
-class StaticUpdateElement : virtual public Element {
+class StaticUpdateElement : public Element {
 public:
     using Element::Element;
+
+    StaticUpdateElement(
+        const sf::Texture& texture,
+        const sf::Vector2f& position,
+        const sf::Vector2f& scale) : Element(texture, position, scale) {}
 
     void update(float /*dt*/) override {}
 };
@@ -178,42 +199,54 @@ public:
 template <typename State>
 class TouchableElement : public TouchableElementBase,
                          public StateHandlerElement<State> {
-    using TouchCallback = std::function<void(State&)>;
-    using CheckActivity = std::function<bool(const State&)>;
-
-    TouchCallback touch_callback;
-    CheckActivity check_activity;
 
 public:
-    explicit TouchableElement(TouchCallback touch_cb,
-                    CheckActivity check_active = [](const State&){ return true; })
+    using TouchCallback = std::function<void(State&)>;
+    using CheckActivity = std::function<bool(const State&)>;
+    using EnableChecker = std::function<bool(const State&)>;
+
+private:
+    TouchCallback touch_callback;
+    CheckActivity check_activity;
+    EnableChecker enable_checker;
+public:
+    explicit TouchableElement(
+                    TouchCallback touch_cb,
+                    CheckActivity check_active = [](const State&){ return true; },
+                    EnableChecker enable_checker = [](const State&){ return true; })
         : touch_callback(std::move(touch_cb))
-        , check_activity(std::move(check_active)) {}
+        , check_activity(std::move(check_active))
+        , enable_checker(std::move(enable_checker)){}
 
     void touch() override {
-        if (this->state && touch_callback && check_activity(this->get_state())) {
+        if (touch_callback && check_activity(this->get_state())) {
             touch_callback(this->get_state());
         }
+    }
+
+    [[nodiscard]] bool is_enable(const State& state) const noexcept {
+        return this->enable_checker(state);
     }
 };
 
 template <Config::Page page, typename State>
-class StaticTouchableElement final : public StaticUpdateElement,
-                                     public TouchableElement<State> {
+class StaticTouchableElement  : public StaticUpdateElement,
+                                public TouchableElement<State> {
 public:
+    bool enable(const Config::Page current_page) const noexcept override {
+        return current_page == page && this->is_enable(this->get_state());
+    }
+
     StaticTouchableElement(
         const sf::Texture& texture,
         const sf::Vector2f& position,
         typename TouchableElement<State>::TouchCallback touch_cb,
         typename TouchableElement<State>::CheckActivity check_active = [](const State&){ return true; },
+        typename TouchableElement<State>::EnableChecker  enable_checker = [](const State&){ return true; },
         const sf::Vector2f& scale = {1.f, 1.f})
-        : Element(texture, position, scale)
-        , StaticUpdateElement()
-        , TouchableElement<State>(std::move(touch_cb), std::move(check_active)) {}
+        : StaticUpdateElement(texture, position, scale)
+        , TouchableElement<State>(std::move(touch_cb), std::move(check_active), std::move(enable_checker)) {}
 
-    bool is_current_page(Config::Page current_page) const noexcept override {
-        return current_page == page;
-    }
 };
 
 template <Config::Page page, typename State>
@@ -224,20 +257,21 @@ class DynamicTouchableElement final : public Element,
     UpdateFunction update_function;
 
 public:
+    bool enable(const Config::Page current_page) const noexcept override {
+        return current_page == page && this->enable_checker(this->get_state());
+    }
+
     DynamicTouchableElement(
         const sf::Texture& texture,
         const sf::Vector2f& position,
         typename TouchableElement<State>::TouchCallback touch_cb,
         UpdateFunction update_func,
         typename TouchableElement<State>::CheckActivity check_active = [](const State&){ return true; },
+        typename TouchableElement<State>::EnableChecker enable_checker = [](const State&){ return true; },
         const sf::Vector2f& scale = {1.f, 1.f})
         : Element(texture, position, scale)
-        , TouchableElement<State>(std::move(touch_cb), std::move(check_active))
+        , TouchableElement<State>(std::move(touch_cb), std::move(check_active), std::move(enable_checker))
         , update_function(std::move(update_func)) {}
-
-    bool is_current_page(Config::Page current_page) const noexcept override {
-        return current_page == page;
-    }
 
     void update(const float dt) override {
         Element::update(dt);
@@ -257,10 +291,10 @@ public:
         const sf::Texture& texture,
         const sf::Vector2f& position,
         const sf::Vector2f& scale = {1.f, 1.f})
-        : Element(texture, position, scale), StaticUpdateElement() {
+        : StaticUpdateElement(texture, position, scale) {
     }
 
-    bool is_current_page(const Config::Page current_page) const noexcept override {
+    bool enable(const Config::Page current_page) const noexcept override {
         return current_page == page;
     }
 };

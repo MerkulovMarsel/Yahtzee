@@ -26,8 +26,11 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         core/modes/coundown/CountDownGame.h
         core/modes/race/RaceGame.cpp
         core/modes/race/RaceGame.h
-        objects/Element.h
-        objects/Element.cpp
+        element/Element.h
+        element/Element.cpp
+        core/modes/test/TestGame.cpp
+        core/modes/test/TestGame.h
+        element/handler/Handler.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

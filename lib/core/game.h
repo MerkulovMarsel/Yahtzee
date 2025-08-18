@@ -10,10 +10,9 @@
 #include "config/GameConfig/GameConfig.h"
 
 class Game {
-protected:
     struct PlayerInfo {
         std::vector<GameConfig::ScoreType> category_scores;
-        std::vector<GameConfig::Bonus> bonus_scores;
+        std::vector<GameConfig::BonusState> bonus_scores;
         std::vector<GameConfig::DiceValues> dices;
         std::optional<std::size_t> chosen_category;
         std::size_t roll_count;
@@ -21,6 +20,7 @@ protected:
 
     using Players = std::vector<PlayerInfo>;
 
+    Players players;
 public:
 
     enum class GameResult : std::uint8_t {
@@ -33,7 +33,7 @@ public:
 
     virtual ~Game() = default;
 
-    explicit Game(const GameConfig& config);
+    explicit Game(const GameConfig::GameState& state);
 
     [[nodiscard]] virtual GameConfig::Dices get_dices(std::size_t player_index) const = 0;
 

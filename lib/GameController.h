@@ -8,31 +8,21 @@
 
 #include "config/Config.h"
 #include "core/game.h"
-#include "objects/Element.h"
+#include "element/Element.h"
+#include "element/handler/Handler.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
 
 
-struct ObjectsHandler {
-
-};
-
-
-struct GameState {
-    Config::Page current_page;
-
-};
 
 class GameController {
-public:
-    using Objects = std::vector<std::unique_ptr<Element>>;
-private:
     std::unique_ptr<Game> game;
     Config config;
-    GameState state{};
-    ObjectsHandler objects_handler;
-    Objects objects;
+    GameConfig::GameState state{};
+    Handler::Elements elements;
+    Handler element_handler;
+    Config::Page current_page = Config::Page::START_SETTING;
 public:
 
     explicit GameController(const char *argv0);

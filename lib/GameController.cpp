@@ -5,38 +5,40 @@
 #include "GameController.h"
 
 #include <algorithm>
+#include <ranges>
 
-GameController::GameController(const char* argv0) : config(argv0) {
+GameController::GameController(const char* argv0) : config(argv0), element_handler(config, elements) {
+
 }
 
-void GameController::handleEvent(const sf::Event &event) {
-    switch (config.current_page) {
-        case Config::Page::START_SETTING : {
+void GameController::handleEvent(const sf::Event& event) {
+    if (event.type != sf::Event::MouseButtonPressed) { return; }
 
-            break;
-        }
-        case Config::Page::CONFIG_SETTINGS : {
+    const auto mouse_pos = sf::Vector2f(
+        static_cast<float>(event.mouseButton.x),
+        static_cast<float>(event.mouseButton.y)
+    );
 
-            break;
-        }
-        case Config::Page::GAME_PLAYING : {
+    for (auto & obj : std::ranges::reverse_view(elements)) {
+        if (!obj->enable(current_page) ) { continue; }
 
-            break;
-        }
-        case Config::Page::GAME_OVER : {
-            break;
+        if (!obj->get_sprite_bounds().contains(mouse_pos)) { continue; }
+
+        if (auto* touchable = dynamic_cast<TouchableElementBase*>(obj)) {
+            touchable->touch();
+            return;
         }
     }
 }
 
 void GameController::update(const float dt) {
-    std::ranges::for_each(objects, [&](auto& object) {
+    std::ranges::for_each(elements, [&](auto& object) {
     object->update(dt);});
 }
 
 void GameController::render(sf::RenderWindow &window) {
-    std::ranges::for_each(objects, [&](const auto& object) {
-    if (object->is_current_page(state.current_page)) {
+    std::ranges::for_each(elements, [&](const auto& object) {
+    if (object->enable(current_page)) {
         object->render(window);
     }
 });
