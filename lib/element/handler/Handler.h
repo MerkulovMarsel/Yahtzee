@@ -16,6 +16,7 @@ namespace elements {
     using Page = Config::Page;
     using GameMode = Config::GameMode;
     using TextTypes = info::TextTypes;
+    using MousePos = const std::optional<sf::Vector2f>&;
 
     template<Page page>
     class BackGround final : public StaticElement<page> {
@@ -48,7 +49,7 @@ namespace elements {
             config.current_page,
             *config.get_change_page_button_texture(),
             Config::get_change_page_button_position(),
-            [](Page& page) { if (page == page_from) { page = page_to; } }
+            [](Page& page, MousePos) { if (page == page_from) { page = page_to; } }
         ) {}
     };
 
@@ -82,7 +83,8 @@ namespace elements {
             config.game_config.game_state.players_count,
             *config.get_player_count_button_texture(count),
             Config::get_count_player_button_position(count),
-            [] (std::size_t& current_count) {current_count = static_cast<std::size_t>(count); },
+            [] (std::size_t& current_count, MousePos)
+            {current_count = static_cast<std::size_t>(count); },
             [](sf::Sprite& sprite, const std::size_t& current_count, bool) {
                 if (current_count == static_cast<std::size_t>(count)) {
                     sprite.setColor(TOUCH_COLOR);
@@ -95,8 +97,40 @@ namespace elements {
     using SinglePlayerButton = SetPlayerCountButton<Config::PlayerCount::SINGLE>;
     using OneVsOnePlayerButton = SetPlayerCountButton<Config::PlayerCount::ONE_VS_ONE>;
 
-    
+    template<Config::SlidersType slider_type>
+    void integral_slider_touch_cb(std::size_t& state, MousePos position);
 
+    template<Config::SlidersType slider_type>
+    void integral_slider_update( sf::Sprite& sprite,const std::size_t& state, bool);
+
+
+    template<Config::SlidersType sliders_type>
+    class IntegerSlider final : public DynamicTouchableElement<Page::CONFIG_SETTINGS, std::size_t> {
+        sf::Sprite thumb_sprite;
+    public:
+        explicit IntegerSlider(Config& config) :
+        DynamicTouchableElement(
+            config.get_slider_state(sliders_type),
+            *config.get_slider_track_texture(sliders_type),
+            sf::Vector2f(0.,0.),
+            integral_slider_touch_cb<sliders_type>,
+            integral_slider_update<sliders_type>
+        ) {
+            thumb_sprite.setTexture(*config.get_slider_thumb_texture(sliders_type));
+            thumb_sprite.setPosition(config.get_slider_position(sliders_type));
+        }
+
+        [[nodiscard]] sf::FloatRect get_sprite_bounds() const noexcept override {
+            return thumb_sprite.getGlobalBounds();
+        }
+
+        void render(sf::RenderTarget& window) const override {
+            window.draw(thumb_sprite);
+            Element::render(window);
+        }
+    };
+
+    using DIceCountSlider = IntegerSlider<Config::SlidersType::DiceCountSlider>;
 
     // definitions
     template<GameMode mode>
@@ -125,6 +159,28 @@ namespace elements {
 
         std::get<2>(game_info) = Page::GAME_PLAYING;
     }
+
+    template<Config::SlidersType slider_type>
+    void integral_slider_touch_cb(std::size_t &state, MousePos position) {
+        constexpr std::size_t cells_count = static_cast<std::size_t>(slider_type);
+        const float x_start = Config::get_slider_position(slider_type).x;
+        const std::size_t lowest_value = Config::get_slider_lowest_value(slider_type);
+        const float cells_size = Config::get_slider_size(slider_type) / static_cast<float>(cells_count);
+        const float mouse_x = position->x - x_start;
+        state = lowest_value + static_cast<std::size_t>(mouse_x / cells_size);
+    }
+
+    template<Config::SlidersType slider_type>
+    void integral_slider_update(sf::Sprite &sprite, const std::size_t &state, bool) {
+        constexpr std::size_t cells_count = static_cast<std::size_t>(slider_type);
+        const float cells_size = Config::get_slider_size(slider_type) / static_cast<float>(cells_count);
+        const float x_lowest_value = Config::get_track_lowest_value_position(slider_type).x;
+        const std::size_t lowest_value = Config::get_slider_lowest_value(slider_type);
+        const float x = x_lowest_value + cells_size * (state - lowest_value);
+        const float y = Config::get_track_lowest_value_position(slider_type).y;
+        sprite.setPosition(x, y);
+    }
+
 }
 struct Handler {
     using Elements = std::vector<Element*>;
@@ -140,6 +196,8 @@ struct Handler {
     elements::SinglePlayerButton single_player_button;
     elements::OneVsOnePlayerButton one_vs_one_player_button;
 
+    elements::DIceCountSlider dice_count_slider;
+
     explicit Handler(Config& config, Elements& elements) :
         start_settings_back_ground(config),
         config_settings_back_ground(config),
@@ -148,8 +206,9 @@ struct Handler {
         config_from_start_button(config),
         back_to_start_button(config),
         single_player_button(config),
-        one_vs_one_player_button(config){
-        elements.reserve(6);
+        one_vs_one_player_button(config),
+        dice_count_slider(config){
+        elements.reserve(9);
         elements.emplace_back(&start_settings_back_ground);
         elements.emplace_back(&config_settings_back_ground);
         elements.emplace_back(&game_back_ground);
@@ -158,6 +217,7 @@ struct Handler {
         elements.emplace_back(&back_to_start_button);
         elements.emplace_back(&single_player_button);
         elements.emplace_back(&one_vs_one_player_button);
+        elements.emplace_back(&dice_count_slider);
     }
 
 };

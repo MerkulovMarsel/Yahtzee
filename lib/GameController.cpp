@@ -24,7 +24,7 @@ void GameController::handleEvent(const sf::Event& event) {
         if (!obj->get_sprite_bounds().contains(mouse_pos)) { continue; }
 
         if (auto* touchable = dynamic_cast<TouchableElementBase*>(obj)) {
-            touchable->touch();
+            touchable->touch(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             return;
         }
     }

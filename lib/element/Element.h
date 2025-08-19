@@ -108,7 +108,7 @@ public:
 
     [[nodiscard]] sf::Sprite& get_sprite() noexcept { return sprite; }
 
-    [[nodiscard]] sf::FloatRect get_sprite_bounds() const noexcept { return sprite.getGlobalBounds(); }
+    [[nodiscard]] virtual sf::FloatRect get_sprite_bounds() const noexcept { return sprite.getGlobalBounds(); }
 
     void set_texture(const sf::Texture& new_texture) noexcept {
         sprite.setTexture(new_texture, true);
@@ -128,7 +128,7 @@ public:
 
     virtual bool enable(Config::Page current_page) const noexcept = 0;
 
-    void render(sf::RenderTarget& window) const {
+    virtual void render(sf::RenderTarget& window) const {
         window.draw(sprite);
     }
 
@@ -195,7 +195,7 @@ public:
 class TouchableElementBase {
 public:
     virtual ~TouchableElementBase() = default;
-    virtual void touch() = 0;
+    virtual void touch(std::optional<sf::Vector2f> mouse_position = std::nullopt) = 0;
 };
 
 template <typename State>
@@ -203,7 +203,7 @@ class TouchableElement : public TouchableElementBase,
                          public StateHandlerElement<State> {
 
 public:
-    using TouchCallback = std::function<void(State&)>;
+    using TouchCallback = std::function<void(State&, const std::optional<sf::Vector2f>&)>;
     using CheckActivity = std::function<bool(const State&)>;
     using EnableChecker = std::function<bool(const State&)>;
 
@@ -222,9 +222,9 @@ public:
           , enable_checker(std::move(enable_checker)) {
     }
 
-    void touch() override {
+    void touch(std::optional<sf::Vector2f> mouse_position = std::nullopt) override {
         if (touch_callback && check_activity(this->get_state())) {
-            touch_callback(this->get_state());
+            touch_callback(this->get_state(),  mouse_position);
         }
     }
 
@@ -235,12 +235,18 @@ public:
     [[nodiscard]] bool is_active(const State& state) const noexcept {
         return this->check_activity(state);
     }
+
+    [[nodiscard]] virtual sf::Sprite& get_sprite_touch() noexcept  = 0;
 };
 
 template <Config::Page page, typename State>
 class StaticTouchableElement  : public StaticUpdateElement,
                                 public TouchableElement<State> {
 public:
+    [[nodiscard]] sf::Sprite & get_sprite_touch() noexcept override {
+        return this->get_sprite();
+    }
+
     bool enable(const Config::Page current_page) const noexcept override {
         return current_page == page && this->is_enable(this->get_state());
     }
@@ -261,6 +267,12 @@ public:
 template <Config::Page page, typename State>
 class DynamicTouchableElement : public Element,
                                       public TouchableElement<State> {
+public:
+    [[nodiscard]] sf::Sprite & get_sprite_touch() noexcept override {
+        return this->get_sprite();
+    }
+
+private:
     using UpdateFunction = std::function<void(sf::Sprite&, const State&, bool)>;
 
     UpdateFunction update_function;

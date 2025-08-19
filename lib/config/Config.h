@@ -46,6 +46,9 @@ namespace elements::assets_filenames {
     CONST SPEED_GAME_MODE_BUTTON = "SpeedGameModeButton.png";
     CONST TEST_GAME_MODE_BUTTON = "TestGameModeButton.png";
 
+    CONST SLIDER_TRACK = "SliderTrack.png";
+    CONST SLIDER_THUMB_DICE_COUNT = "SliderThumbDiceCount.png";
+
     // Игровые элементы
     CONST GAME_BOARD = "GameBoard.png";
     CONST GAME_OVER_BOARD = "GameOverBoard.png";
@@ -96,6 +99,12 @@ namespace elements::coord {
     CONST PLAYER_COUNT_BUTTON_Y = 160;
     CONST PLAYER_COUNT_BUTTON_INDENT = 240;
     CONST PLAYER_COUNT_BUTTON_SIZE_X = 186;
+
+    CONST TRACK_SIZE = 20;
+    CONST SLIDER_DICE_COUNT_X = 300;
+    CONST SLIDER_DICE_COUNT_Y = 300;
+    CONST SLIDER_WIGHT = 50;
+
 };
 
 namespace elements::info {
@@ -133,6 +142,10 @@ struct Config {
     enum class PlayerCount : std::uint8_t {
         SINGLE = 1,
         ONE_VS_ONE = 2
+    };
+
+    enum class SlidersType : std::uint8_t {
+        DiceCountSlider = 5
     };
 
     explicit Config(const char* argv0) {
@@ -195,6 +208,8 @@ private:
                    load_texture(CHANGE_PAGE_BUTTON, elements::assets_filenames::CHANG_PAGE_BUTTON_SETTING) &&
                    load_texture(SINGLE_PLAYER_BUTTON, elements::assets_filenames::SINGLE_PLAYER_BUTTON_SETTING) &&
                    load_texture(ONE_VS_ONE_BUTTON, elements::assets_filenames::ONE_VS_ONE_BUTTON) &&
+                   load_texture(SLIDER_TRACK, elements::assets_filenames::SLIDER_TRACK) &&
+                   load_texture(SLIDER_THUMB_DICE_COUNT, elements::assets_filenames::SLIDER_THUMB_DICE_COUNT) &&
                    load_texture(SUM1, elements::assets_filenames::SUM1) &&
                    load_texture(SUM2, elements::assets_filenames::SUM2) &&
                    load_texture(SUM3, elements::assets_filenames::SUM3) &&
@@ -240,6 +255,8 @@ public:
     std::shared_ptr<sf::Texture> CHANGE_PAGE_BUTTON = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SINGLE_PLAYER_BUTTON = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> ONE_VS_ONE_BUTTON = std::make_shared<sf::Texture>();
+    std::shared_ptr<sf::Texture> SLIDER_TRACK = std::make_shared<sf::Texture>();
+    std::shared_ptr<sf::Texture> SLIDER_THUMB_DICE_COUNT = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM1 = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM2 = std::make_shared<sf::Texture>();
     std::shared_ptr<sf::Texture> SUM3 = std::make_shared<sf::Texture>();
@@ -258,6 +275,9 @@ public:
     static sf::Vector2f get_set_game_mode_position(GameMode mode) noexcept;
     static sf::Vector2f get_change_page_button_position() noexcept;
     static sf::Vector2f get_count_player_button_position(PlayerCount type) noexcept;
+    static sf::Vector2f get_slider_position(SlidersType type) noexcept;
+    static sf::Vector2f get_track_lowest_value_position(SlidersType type) noexcept;
+
 
     std::shared_ptr<sf::Texture> get_change_page_button_texture() const {
         return CHANGE_PAGE_BUTTON;
@@ -308,9 +328,33 @@ public:
         std::unreachable();
     }
 
+    std::shared_ptr<sf::Texture> get_slider_track_texture(const SlidersType type) const {
+        switch (type) {
+            case SlidersType::DiceCountSlider : {
+                return SLIDER_TRACK;
+            }
+        }
+        std::unreachable();
+    }
+
+    std::shared_ptr<sf::Texture> get_slider_thumb_texture(const SlidersType type) const {
+        switch (type) {
+            case SlidersType::DiceCountSlider : {
+                return SLIDER_THUMB_DICE_COUNT;
+            }
+        }
+        std::unreachable();
+    }
+
     static std::string get_info_text(elements::info::TextTypes type) noexcept;
     static unsigned int get_info_text_size(elements::info::TextTypes type) noexcept;
 
+
+    std::size_t& get_slider_state(SlidersType type) noexcept;
+
+    static float get_slider_size(SlidersType type) noexcept;
+
+    static std::size_t get_slider_lowest_value(SlidersType type) noexcept;
 
     GameConfig game_config;
     Page current_page = Page::START_SETTING;
@@ -363,7 +407,28 @@ inline sf::Vector2f Config::get_count_player_button_position(const PlayerCount t
     std::unreachable();
 }
 
-inline std::string Config::get_info_text(elements::info::TextTypes type) noexcept {
+inline sf::Vector2f Config::get_slider_position(const SlidersType type) noexcept {
+    switch (type) {
+        case SlidersType::DiceCountSlider : {
+            return {elements::coord::SLIDER_DICE_COUNT_X, elements::coord::SLIDER_DICE_COUNT_Y};
+        }
+    }
+    std::unreachable();
+}
+
+inline sf::Vector2f Config::get_track_lowest_value_position(SlidersType type) noexcept {
+    switch (type) {
+        case SlidersType::DiceCountSlider : {
+            return {elements::coord::SLIDER_DICE_COUNT_X +
+                get_slider_size(type) / static_cast<std::size_t>(type) / 2.f - elements::coord::TRACK_SIZE / 2,
+            elements::coord::SLIDER_DICE_COUNT_Y +
+                elements::coord::SLIDER_WIGHT / 2  - elements::coord::TRACK_SIZE / 2};
+        }
+    }
+    std::unreachable();
+}
+
+inline std::string Config::get_info_text(const elements::info::TextTypes type) noexcept {
     switch (type) {
         case elements::info::TextTypes::CHOSE_GAME_MODE : {
             return "Choose Game Mode:";
@@ -372,6 +437,33 @@ inline std::string Config::get_info_text(elements::info::TextTypes type) noexcep
             throw std::invalid_argument("Invalid info text type");
         }
     }
+}
+
+inline std::size_t & Config::get_slider_state(SlidersType type) noexcept {
+    switch (type) {
+        case SlidersType::DiceCountSlider : {
+            return game_config.game_state.dice_count;
+        }
+    }
+    std::unreachable();
+}
+
+inline float Config::get_slider_size(SlidersType type) noexcept {
+    switch (type) {
+        case SlidersType::DiceCountSlider : {
+            return 700.f;
+        }
+    }
+    std::unreachable();
+}
+
+inline std::size_t Config::get_slider_lowest_value(const SlidersType type) noexcept {
+    switch (type) {
+        case SlidersType::DiceCountSlider : {
+            return 3ULL;
+        }
+    }
+    std::unreachable();
 }
 
 #undef CONST
