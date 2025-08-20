@@ -8,9 +8,9 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         core/game.h
         Application.cpp
         Application.h
-        config/Config.cpp
-        config/Config.h
-        config/GameConfig/GameConfig.h
+        UIManger/UIManager.h
+        UIManger/UIManager.cpp
+        UIManger/GameConfig/GameConfig.h
         GameController.cpp
         GameController.h
         exception/YahtzeeException.h
@@ -26,11 +26,31 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         core/modes/coundown/CountDownGame.h
         core/modes/race/RaceGame.cpp
         core/modes/race/RaceGame.h
-        element/Element.h
-        element/Element.cpp
+        element/base/Element.h
         core/modes/test/TestGame.cpp
         core/modes/test/TestGame.h
         element/handler/Handler.h
+        UIManger/TextureManager/TextureManager.cpp
+        UIManger/TextureManager/TextureManager.h
+        UIManger/ElementsTypes/ElementsTypes.h
+        UIManger/PositionManger/PositionManager.cpp
+        UIManger/PositionManger/PositionManager.h
+        element/base/animator/Animator.cpp
+        element/base/animator/Animator.h
+        element/base/Element.cpp
+        element/base/StaticUpdate/StaticUpdateElement.cpp
+        element/base/StaticUpdate/StaticUpdateElement.h
+        element/base/StateHandler/StateHandler.h
+        element/base/Touchable/TouchableElement.h
+        element/base/StaticTouchable/StaticTouchableElement.h
+        element/base/DynamicTouchable/DynamicTouchableElement.h
+        element/base/StaticUntouchable/StaticUntouchableElement.h
+        element/handler/BackGround/BackGround.h
+        element/handler/Tracker.h
+        element/handler/PageChangerButton/PageChangerButton.h
+        element/handler/SetPlayerCountButton/SetPlayerCountButton.h
+        element/handler/IntegerSlider/IntegerSlider.h
+        element/handler/SetGameModeButton/SetGameModeButton.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

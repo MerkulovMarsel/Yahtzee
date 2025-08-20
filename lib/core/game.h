@@ -7,7 +7,7 @@
 #include <vector>
 #include <utility>
 
-#include "config/GameConfig/GameConfig.h"
+#include "UIManger/GameConfig/GameConfig.h"
 
 class Game {
     struct PlayerInfo {

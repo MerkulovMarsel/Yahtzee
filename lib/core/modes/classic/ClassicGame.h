@@ -4,7 +4,7 @@
 
 #ifndef SMALLCLASSICGAME_H
 #define SMALLCLASSICGAME_H
-#include "config/Config.h"
+#include "UIManger/UIManager.h"
 #include "core/game.h"
 
 // PASHA YOU NEED TO DO
@@ -13,7 +13,7 @@ class ClassicGame final : public Game {
 public:
     explicit ClassicGame(const GameConfig::GameState& state);
 
-    explicit ClassicGame(Config::Page get);
+    explicit ClassicGame(Page get);
 
     [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
 

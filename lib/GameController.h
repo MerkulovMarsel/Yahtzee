@@ -6,16 +6,16 @@
 #define GAMECONTROLLER_H
 #include <memory>
 
-#include "config/Config.h"
+#include "UIManger/UIManager.h"
 #include "core/game.h"
-#include "element/Element.h"
+#include "element/base/Element.h"
 #include "element/handler/Handler.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
 class GameController {
     std::unique_ptr<Game> game;
-    Config config;
+    UIManager config;
     Handler::Elements elements;
     Handler element_handler;
 

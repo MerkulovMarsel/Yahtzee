@@ -1,0 +1,183 @@
+//
+// Created by Марсель on 19.08.2025.
+//
+
+#ifndef TEXTUREMANGER_H
+#define TEXTUREMANGER_H
+
+#include <memory>
+#include <filesystem>
+
+#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "SFML/Graphics/Font.hpp"
+#include "SFML/Graphics/Texture.hpp"
+
+#define CONST static constexpr auto
+#define TEXTURE(NAME) std::shared_ptr<sf::Texture> NAME = std::make_shared<sf::Texture>();
+namespace fs = std::filesystem;
+
+namespace elements::assets_filenames {
+
+    // Текстуры костей
+    CONST DICE0 = "Dice0.png";
+    CONST DICE1 = "Dice1.png";
+    CONST DICE2 = "Dice2.png";
+    CONST DICE3 = "Dice3.png";
+    CONST DICE4 = "Dice4.png";
+    CONST DICE5 = "Dice5.png";
+    CONST DICE6 = "Dice6.png";
+
+    // Шрифты
+    CONST FONT = "BebasNeue-Regular.ttf";
+
+    // Элементы интерфейса
+    CONST SQUARE_SETTING = "SquareSetting.png";
+    CONST RECTANGLE_SETTING = "RectangleSetting.png";
+    CONST CHANG_PAGE_BUTTON_SETTING = "ChangePageButton.png";
+    CONST SINGLE_PLAYER_BUTTON_SETTING = "SinglePlayerButton.png";
+    CONST ONE_VS_ONE_BUTTON = "OneVsOneButton.png";
+
+    CONST CLASSIC_GAME_MODE_BUTTON = "ClassicGameModeButton.png";
+    CONST COUNTDOWN_GAME_MODE_BUTTON = "CountDownGameModeButton.png";
+    CONST RACE_GAME_MODE_BUTTON = "RaceGameModeButton.png";
+    CONST SPEED_GAME_MODE_BUTTON = "SpeedGameModeButton.png";
+    CONST TEST_GAME_MODE_BUTTON = "TestGameModeButton.png";
+
+    CONST SLIDER_TRACK = "SliderTrack.png";
+    CONST SLIDER_THUMB_DICE_COUNT = "SliderThumbDiceCount.png";
+
+    // Игровые элементы
+    CONST GAME_BOARD = "GameBoard.png";
+    CONST GAME_OVER_BOARD = "GameOverBoard.png";
+    CONST SETTINGS_BOARD = "SettingsBoard.png";
+    CONST CONFIG_BOARD = "ConfigBoard.png";
+    CONST ACTIVE_PLAY_BUTTON = "ActivePlay.png";
+    CONST UNACTIVE_PLAY_BUTTON = "UnactivePlay.png";
+    CONST ACTIVE_ROLL_BUTTON = "ActiveRoll.png";
+    CONST UNACTIVE_ROLL_BUTTON = "UnactiveRoll.png";
+    CONST ACTIVE_CATEGORY = "ActiveCategory.png";
+    CONST UNACTIVE_CATEGORY = "UnactiveCategory.png";
+
+
+    // Элементы подсчета очков
+    CONST SUM1 = "SUM1.png";
+    CONST SUM2 = "SUM2.png";
+    CONST SUM3 = "SUM3.png";
+    CONST SUM4 = "SUM4.png";
+    CONST SUM5 = "SUM5.png";
+    CONST SUM6 = "SUM6.png";
+}
+
+namespace elements::text {
+    CONST STANDARD_TEXT_SIZE = 24;
+    enum class TextTypes : std::uint8_t {
+        CHOSE_GAME_MODE         = 1,
+        SETTING_HEAD            = 0,
+        PLAYER_COUNT            = 0,
+        DICE_COUNT              = 0,
+        ROLL_COUNT              = 0,
+        CATEGORIES              = 0,
+        PLAYERS_NAMES           = 2,
+        GAME_OVER_PLAYERS_NAMES = 3,
+    };
+}
+
+class TextureManager {
+    using TexturePtr = std::shared_ptr<sf::Texture>;
+
+    fs::path ASSETS_DIR;
+
+    TEXTURE( DICE0 )
+    TEXTURE( DICE1 )
+    TEXTURE( DICE2 )
+    TEXTURE( DICE3 )
+    TEXTURE( DICE4 )
+    TEXTURE( DICE5 )
+    TEXTURE( DICE6 )
+    TEXTURE( GAME_BOARD )
+    TEXTURE( GAME_OVER_BOARD )
+    TEXTURE( SETTINGS_BOARD )
+    TEXTURE( CONFIG_BOARD )
+    TEXTURE( CLASSIC_MODE_BUTTON )
+    TEXTURE( COUNTDOWN_MODE_BUTTON )
+    TEXTURE( RACE_MODE_BUTTON )
+    TEXTURE( SPEED_MODE_BUTTON )
+    TEXTURE( TEST_MODE_BUTTON )
+    TEXTURE( ACTIVE_PLAY_BUTTON )
+    TEXTURE( UNACTIVE_PLAY_BUTTON )
+    TEXTURE( ACTIVE_ROLL_BUTTON )
+    TEXTURE( UNACTIVE_ROLL_BUTTON )
+    TEXTURE( ACTIVE_CATEGORY )
+    TEXTURE( UNACTIVE_CATEGORY )
+    TEXTURE( SQUARE_SETTING )
+    TEXTURE( RECTANGLE_SETTING )
+    TEXTURE( CHANGE_PAGE_BUTTON )
+    TEXTURE( SINGLE_PLAYER_BUTTON )
+    TEXTURE( ONE_VS_ONE_BUTTON )
+    TEXTURE( SLIDER_TRACK )
+    TEXTURE( SLIDER_THUMB_DICE_COUNT )
+    TEXTURE( SUM1 )
+    TEXTURE( SUM2 )
+    TEXTURE( SUM3 )
+    TEXTURE( SUM4 )
+    TEXTURE( SUM5 )
+    TEXTURE( SUM6 )
+    sf::Font font;
+
+    // Texture utility
+    static fs::path find_assets_dir(const char* argv0);
+
+    bool load_all_textures();
+
+    bool load_texture(const TexturePtr& texture, const fs::path& filename) const;
+
+    static std::shared_ptr<sf::Texture> set_text_on_texture(
+    const std::shared_ptr<sf::Texture>& base_texture,
+    const std::string& text,
+    const sf::Font& font,
+    unsigned int char_size = elements::text::STANDARD_TEXT_SIZE,
+    const sf::Color& text_color = sf::Color::White
+    );
+
+    static std::shared_ptr<sf::Texture> create_text_texture(
+        const std::string& text,
+        const sf::Font& font,
+        unsigned int char_size = elements::text::STANDARD_TEXT_SIZE,
+        const sf::Color& text_color = sf::Color::White,
+        const sf::Color& background_color = sf::Color::Transparent
+    );
+
+public:
+
+    explicit TextureManager(const char* argv0) {
+        ASSETS_DIR = find_assets_dir(argv0);
+
+
+        if (!load_all_textures()) {
+            throw std::runtime_error("Failed to load textures from: " +
+                                   ASSETS_DIR.string());
+        }
+    }
+
+
+    // Texture getters
+
+    TexturePtr get_change_page_button_texture() const;
+
+    TexturePtr get_background_texture(Page page) const;
+
+    TexturePtr get_set_game_mode_texture(GameMode mode) const;
+
+    TexturePtr get_player_count_button_texture(PlayerCount type) const;
+
+    TexturePtr get_slider_track_texture(SlidersType type) const;
+
+    TexturePtr get_slider_thumb_texture(SlidersType type) const;
+
+    static float get_slider_texture_size(SlidersType type) noexcept;
+};
+
+#undef CONST
+#undef TEXTURE
+
+#endif //TEXTUREMANGER_H
