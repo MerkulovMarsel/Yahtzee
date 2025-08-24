@@ -60,7 +60,10 @@ namespace elements {
 
     enum class TextType : Code {
         YahtzeeMain =  0U,
-        ChooseGameMode = NEXT(YahtzeeMain)
+        ChooseGameMode = NEXT(YahtzeeMain),
+        Settings = NEXT(ChooseGameMode),
+        PlayerCount = NEXT(Settings),
+        DiceCount = NEXT(PlayerCount)
     };
     static constexpr Code TEXT_TYPE_ID = GET_TYPE_ID(TextType::YahtzeeMain);
     template<TextType type>
@@ -69,6 +72,9 @@ namespace elements {
             case TextType::YahtzeeMain:
             case TextType::ChooseGameMode:
                 return Page::START_SETTING;
+
+            default:
+                return Page::CONFIG_SETTINGS;
         }
         std::unreachable();
     }

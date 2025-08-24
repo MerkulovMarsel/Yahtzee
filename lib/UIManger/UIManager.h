@@ -26,6 +26,10 @@ struct UIManager {
     explicit UIManager(const char* argv0): texture_manager(argv0) {
     }
 
+    template <elements::ElementType Type>
+    elements::Cord get_position(Type type) const {
+        return position_manager.get_position(data, type);
+    }
 
     std::size_t& get_slider_state(elements::SlidersType slider);
 

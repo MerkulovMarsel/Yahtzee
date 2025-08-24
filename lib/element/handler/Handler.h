@@ -18,65 +18,55 @@ struct Handler {
 
     elements::StartSettingsBackGround start_settings_back_ground;
     elements::YahtzeeMainTextElement yahtzee_main_text;
-    elements::ChooseGameModeElement choose_game_mode;
+    elements::ChooseGameModeTextElement choose_game_mode;
 
-    elements::ConfigSettingsBackGround manager_settings_back_ground;
+    elements::ConfigSettingsBackGround config_settings_back_ground;
+    elements::SettingsTextElement settings_main_text;
+    elements::PlayerCountTextElement player_count_text;
+    elements::DiceCountTextElement dice_count_text;
 
     elements::GameBackGround game_back_ground;
 
-
     elements::GameOverBackGround game_over_back_ground;
 
-    elements::OpenConfigSettingsFromStartSettingButton manager_from_start_button;
+    elements::OpenConfigSettingsFromStartSettingButton config_from_start_button;
     elements::BackToStartSettingsFromConfigSettingsButton back_to_start_button;
-
     elements::SinglePlayerButton single_player_button;
     elements::OneVsOnePlayerButton one_vs_one_player_button;
-
     elements::DiceCountSlider dice_count_slider;
-
-
-    // elements::ClassicGameModeButton classic_game_mode_button;
-    // elements::CountDownGameModeButton count_down_game_mode_button;
-    // elements::SpeedGameModeButton speed_game_mode_button;
-    // elements::RaceGameModeButton race_game_mode_button;
-    // elements::TestGameModeButton test_game_mode_button;
 
     explicit Handler(UIManager& manager, Elements& elements) :
         start_settings_back_ground(manager),
         yahtzee_main_text(manager),
         choose_game_mode(manager),
-        manager_settings_back_ground(manager),
+        config_settings_back_ground(manager),
+        settings_main_text(manager),
+        player_count_text(manager),
+        dice_count_text(manager),
         game_back_ground(manager),
         game_over_back_ground(manager),
-        manager_from_start_button(manager),
+        config_from_start_button(manager),
         back_to_start_button(manager),
         single_player_button(manager),
         one_vs_one_player_button(manager),
         dice_count_slider(manager)
-        //classic_game_mode_button(manager),
-        //count_down_game_mode_button(manager),
-        //speed_game_mode_button(manager),
-        //race_game_mode_button(manager),
-        //test_game_mode_button(manager)
-        {
-        elements.reserve(manager.elements_count);
-        elements.emplace_back(&start_settings_back_ground);
-        elements.emplace_back(&yahtzee_main_text);
-        elements.emplace_back(&choose_game_mode);
-        elements.emplace_back(&manager_settings_back_ground);
-        elements.emplace_back(&game_back_ground);
-        elements.emplace_back(&game_over_back_ground);
-        elements.emplace_back(&manager_from_start_button);
-        elements.emplace_back(&back_to_start_button);
-        elements.emplace_back(&single_player_button);
-        elements.emplace_back(&one_vs_one_player_button);
-        elements.emplace_back(&dice_count_slider);
-        //elements.emplace_back(&classic_game_mode_button);
-        //elements.emplace_back(&count_down_game_mode_button);
-        //elements.emplace_back(&speed_game_mode_button);
-        //elements.emplace_back(&race_game_mode_button);
-        //elements.emplace_back(&test_game_mode_button);
+    {
+        elements = {
+            &start_settings_back_ground,
+            &yahtzee_main_text,
+            &choose_game_mode,
+            &config_settings_back_ground,
+            &settings_main_text,
+            &player_count_text,
+            &dice_count_text,
+            &game_back_ground,
+            &game_over_back_ground,
+            &config_from_start_button,
+            &back_to_start_button,
+            &single_player_button,
+            &one_vs_one_player_button,
+            &dice_count_slider
+        };
     }
 };
 

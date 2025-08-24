@@ -60,7 +60,8 @@ bool TextureManager::load_all_textures() {
                    load_texture(SINGLE_PLAYER_BUTTON, elements::assets_filenames::SINGLE_PLAYER_BUTTON_SETTING) &&
                    load_texture(ONE_VS_ONE_BUTTON, elements::assets_filenames::ONE_VS_ONE_BUTTON) &&
                    load_texture(SLIDER_TRACK, elements::assets_filenames::SLIDER_TRACK) &&
-                   load_texture(SLIDER_THUMB_DICE_COUNT, elements::assets_filenames::SLIDER_THUMB_DICE_COUNT) &&
+                   load_texture(SLIDER_THUMB, elements::assets_filenames::SLIDER_THUMB) &&
+                   load_texture(SLIDER_BORDER, elements::assets_filenames::SLIDER_BORDER) &&
                    load_texture(SUM1, elements::assets_filenames::SUM1) &&
                    load_texture(SUM2, elements::assets_filenames::SUM2) &&
                    load_texture(SUM3, elements::assets_filenames::SUM3) &&
@@ -168,6 +169,57 @@ bool TextureManager::draw_text_on_sprite(
     return true;
 }
 
+bool TextureManager::draw_texture_on_sprite(sf::Sprite &sprite, const sf::Texture &texture,
+                                            const sf::Vector2f position) const {
+    if (sprite.getTexture() == nullptr) {
+        return false;
+    }
+
+    sf::Vector2u size = sprite.getTexture()->getSize();
+
+    sf::RenderTexture render_texture;
+    if (!render_texture.create(size.x, size.y)) {
+        return false;
+    }
+    render_texture.clear(sf::Color::Transparent);
+
+    sf::Sprite original_sprite(*sprite.getTexture());
+    original_sprite.setTextureRect(sprite.getTextureRect());
+    render_texture.draw(original_sprite);
+
+    sf::Sprite texture_sprite(texture);
+
+    sf::Vector2f texture_center(texture.getSize().x / 2.0f, texture.getSize().y / 2.0f);
+    texture_sprite.setOrigin(texture_center);
+
+    texture_sprite.setPosition(position);
+
+    render_texture.draw(texture_sprite);
+    render_texture.display();
+
+    std::optional<std::size_t> texture_index;
+    TexturePtr permanent_texture = create_texture(texture_index);
+    if (!permanent_texture) {
+        return false;
+    }
+
+    permanent_texture->loadFromImage(render_texture.getTexture().copyToImage());
+
+    sf::IntRect originalTextureRect = sprite.getTextureRect();
+    sf::Vector2f originalOrigin = sprite.getOrigin();
+    sf::Vector2f originalScale = sprite.getScale();
+    float originalRotation = sprite.getRotation();
+
+    sprite.setTexture(*permanent_texture, false);
+
+    sprite.setTextureRect(originalTextureRect);
+    sprite.setOrigin(originalOrigin);
+    sprite.setScale(originalScale);
+    sprite.setRotation(originalRotation);
+
+    return true;
+}
+
 
 TextureManager::TexturePtr TextureManager::get_change_page_button_texture() const {
     return CHANGE_PAGE_BUTTON;
@@ -218,31 +270,20 @@ TextureManager::TexturePtr TextureManager::get_player_count_button_texture(eleme
     std::unreachable();
 }
 
-TextureManager::TexturePtr TextureManager::get_slider_track_texture(elements::SlidersType type) const {
-    switch (type) {
-        case elements::SlidersType::DiceCountSlider : {
-            return SLIDER_TRACK;
-        }
-    }
-    std::unreachable();
+TextureManager::TexturePtr TextureManager::get_slider_track_texture() const {
+    return SLIDER_TRACK;
 }
 
-TextureManager::TexturePtr TextureManager::get_slider_thumb_texture(elements::SlidersType type) const {
-    switch (type) {
-        case elements::SlidersType::DiceCountSlider : {
-            return SLIDER_THUMB_DICE_COUNT;
-        }
-    }
-    std::unreachable();
+TextureManager::TexturePtr TextureManager::get_slider_thumb_texture() const {
+    return SLIDER_THUMB;
 }
 
-float TextureManager::get_slider_texture_size(const elements::SlidersType type) noexcept {
-    switch (type) {
-        case elements::SlidersType::DiceCountSlider : {
-            return 700.f;
-        }
-    }
-    std::unreachable();
+TextureManager::TexturePtr TextureManager::get_slider_border_texture() const {
+    return SLIDER_BORDER;
+}
+
+float TextureManager::get_slider_texture_size() const noexcept {
+    return SLIDER_THUMB->getSize().x;
 }
 
 TextureManager::TexturePtr TextureManager::get_text_background_texture(const elements::TextType type, const elements::Data& data) const {
@@ -261,10 +302,49 @@ TextureManager::TexturePtr TextureManager::get_text_background_texture(const ele
     return permanent_texture;
 }
 
-bool TextureManager::draw_text(sf::Sprite &sprite, const std::string& text,const unsigned int char_size) const {
-    return draw_text_on_sprite(sprite, text, font, char_size);
+bool TextureManager::draw_text(sf::Sprite &sprite, const std::string& text, const unsigned int char_size) const {
+    sf::Text sf_text;
+    sf_text.setFont(font);
+    sf_text.setString(text);
+    sf_text.setCharacterSize(char_size);
+    sf_text.setFillColor(elements::TEXT_COLOR);
+
+    sf::FloatRect text_bounds = sf_text.getLocalBounds();
+
+    sf::RenderTexture render_texture;
+    if (!render_texture.create(
+        static_cast<unsigned int>(text_bounds.width),
+        static_cast<unsigned int>(text_bounds.height))
+    ) {
+        return false;
+    }
+    render_texture.clear(sf::Color::Transparent);
+
+    sf_text.setPosition(-text_bounds.left, -text_bounds.top);
+
+    render_texture.draw(sf_text);
+    render_texture.display();
+
+    std::optional<std::size_t> index;
+    const auto permanent_texture = create_texture(index);
+    if (!permanent_texture) {
+        return false;
+    }
+    permanent_texture->loadFromImage(render_texture.getTexture().copyToImage());
+
+    sf::Vector2u sprite_size = sprite.getTexture()->getSize();
+    sf::Vector2f center_position(sprite_size.x / 2.0f, sprite_size.y / 2.0f);
+
+    return draw_texture_on_sprite(sprite, *permanent_texture, center_position);
 }
 
-bool TextureManager::draw_set_game_mode_button_text(elements::GameMode mode) const {
+bool TextureManager::draw_slider_borders(sf::Sprite &sprite,const std::vector<float>& positions) const {
+    const float y = static_cast<float>(SLIDER_THUMB->getSize().y) / 2.0f;
+    for (const auto x : positions) {
+        if (!draw_texture_on_sprite(sprite, *SLIDER_BORDER, sf::Vector2f(x, y))) {
+            return false;
+        };
+    }
     return true;
 }
+

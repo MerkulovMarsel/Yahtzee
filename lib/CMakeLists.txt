@@ -54,6 +54,7 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         element/handler/Text/TextElement.h
         UIManger/ElementsTypes/Constant.h
         UIManger/ElementsTypes/Data.h
+        element/handler/StateScreen/StateScreenElement.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

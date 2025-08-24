@@ -11,8 +11,7 @@
 #include "UIManger/ElementsTypes/Constant.h"
 #include "UIManger/ElementsTypes/Data.h"
 #include <cstdint>
-#include <iostream>
-#include <bits/ostream.tcc>
+#include <vector>
 
 
 struct PositionManager {
@@ -29,7 +28,7 @@ struct PositionManager {
     static sf::Vector2f get_change_page_button_position() noexcept;
     static sf::Vector2f get_count_player_button_position(elements::PlayerCount type) noexcept;
     static sf::Vector2f get_slider_position(elements::SlidersType type) noexcept;
-    static sf::Vector2f get_track_lowest_value_position(elements::SlidersType type, std::size_t cells_count) noexcept;
+    static std::vector<float> get_slider_border_positions(const elements::SliderInfo &slider_info, float slider_size) noexcept;
 
 
     template <elements::ElementType Type>
@@ -43,7 +42,6 @@ struct PositionManager {
             const auto pos_type = std::get<elements::PositionType>(raw_position);
             std::size_t x = static_cast<std::uint8_t>(pos_type) % 4U;
             std::size_t y = static_cast<std::uint8_t>(pos_type) / 4U;
-            std::cout << screen_size.x / 4.f * x << ", " << screen_size.y / 4.f * y << std::endl;
             return elements::Cord{screen_size.x / 4.f * x, screen_size.y / 4.f * y} + pos_start;
         }
         if (std::holds_alternative<elements::HighFix>(raw_position)) {
@@ -57,7 +55,7 @@ struct PositionManager {
                 case elements::PositionType::RIGHT :
                 case elements::PositionType::UP_RIGHT :
                 case elements::PositionType::DOWN_RIGHT: {
-                    return elements::Cord{pos_start.x + (screen_size.x / 4.f) * 3.f,pos + pos_start.y};
+                    return elements::Cord{pos_start.x + ((screen_size.x / 4.f) * 3.f),pos + pos_start.y};
                 }
                 default: {
                     return elements::Cord{pos_start.x + (screen_size.x / 2.f),pos + pos_start.y};

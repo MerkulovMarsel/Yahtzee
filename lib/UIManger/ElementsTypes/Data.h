@@ -36,7 +36,7 @@ namespace elements {
     enum class CharSizeType : std::uint8_t {
         XXL = 200U,
         XL = 100U,
-        L = 50U,
+        L = 70U,
         M = 40,
         S = 30,
         XS = 20,
@@ -79,7 +79,16 @@ namespace elements {
             },
             {GET_VALUE(TextType::ChooseGameMode),
                 {PositionType::MID, TextInfo{"Choose game mode:", CharSizeType::XL}}
-            }
+            },
+            {GET_VALUE(TextType::Settings),
+                {HighFix{PositionType::MID, coord::SETTINGS_TEXT_Y}, TextInfo{"Settings", CharSizeType::L}}
+            },
+            {GET_VALUE(TextType::PlayerCount),
+                {HighFix{PositionType::MID, coord::PLAYER_COUNT_TEXT_Y}, TextInfo{"Player count", CharSizeType::M}}
+            },
+            {GET_VALUE(TextType::DiceCount),
+                {HighFix{PositionType::MID, coord::DICE_COUNT_TEXT_Y}, TextInfo{"Dice count", CharSizeType::M}}
+            },
         }) {}
 
         [[nodiscard]] Position get_position(const Code code) const noexcept override {

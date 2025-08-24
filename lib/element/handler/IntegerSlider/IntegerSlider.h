@@ -26,11 +26,11 @@ namespace elements {
         explicit IntegerSlider(UIManager& manager) :
         DynamicTouchableElement(
             manager.get_slider_state(sliders_type),
-            *manager.texture_manager.get_slider_track_texture(sliders_type),
+            *manager.texture_manager.get_slider_track_texture(),
             sf::Vector2f(0.,0.),
             [&](std::size_t& state, MousePos position) {
                 const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
-                const float cells_size = manager.texture_manager.get_slider_texture_size(sliders_type) /
+                const float cells_size = manager.texture_manager.get_slider_texture_size() /
                     static_cast<float>(1 + info.value_max - info.value_min);
                 const float mouse_x = position->x - manager.position_manager.get_slider_position(sliders_type).x;
                 state = info.value_min + static_cast<std::size_t>(mouse_x / cells_size);
@@ -38,16 +38,22 @@ namespace elements {
             [&](sf::Sprite& sprite,const std::size_t& state, bool /*unused*/) {
                 const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
                 const auto cells_count = info.value_max - info.value_min;
-                const float cells_size = manager.texture_manager.get_slider_texture_size(sliders_type) /
+                const float cells_size = manager.texture_manager.get_slider_texture_size() /
                     static_cast<float>(1 + cells_count);
-                const float x = manager.position_manager.get_track_lowest_value_position(sliders_type, cells_count).x +
-                    (cells_size * static_cast<float>(state - info.value_min));
-                sprite.setPosition(x, manager.position_manager.get_track_lowest_value_position(sliders_type, cells_count).y);
+                const float x = manager.get_position(sliders_type).x +
+                    (cells_size * (static_cast<float>(state) - static_cast<float>((info.value_max + info.value_min) / 2)));
+                sprite.setPosition(x, manager.get_position(sliders_type).y);
             }
         ),
         UITracker(manager){
-            thumb_sprite.setTexture(*manager.texture_manager.get_slider_thumb_texture(sliders_type));
-            thumb_sprite.setPosition(PositionManager::get_slider_position(sliders_type));
+            this->set_origin_to_centre();
+            thumb_sprite.setTexture(*manager.texture_manager.get_slider_thumb_texture());
+            thumb_sprite.setOrigin(sf::Vector2f(thumb_sprite.getTexture()->getSize() / 2U));
+            thumb_sprite.setPosition(manager.get_position(sliders_type));
+            const auto border_position = manager.position_manager.get_slider_border_positions(
+                *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type),
+                manager.texture_manager.get_slider_texture_size());
+            manager.texture_manager.draw_slider_borders(thumb_sprite, border_position);
         }
 
         [[nodiscard]] sf::FloatRect get_sprite_bounds() const noexcept override {

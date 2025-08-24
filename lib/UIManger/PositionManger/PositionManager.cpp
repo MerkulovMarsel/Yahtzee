@@ -3,13 +3,13 @@
 //
 
 #include "PositionManager.h"
+#include "UIManger/ElementsTypes/Data.h"
 #include "UIManger/ElementsTypes/ElementsTypes.h"
-#include "UIManger/TextureManager/TextureManager.h"
 
 #include <utility>
+#include <vector>
 
 #include "UIManger/ElementsTypes/Constant.h"
-#include "element/handler/Tracker.h"
 
 sf::Vector2f PositionManager::get_background_position() noexcept {
     return {0.f, 0.f};
@@ -58,19 +58,17 @@ sf::Vector2f PositionManager::get_slider_position(const elements::SlidersType ty
     std::unreachable();
 }
 
-sf::Vector2f PositionManager::get_track_lowest_value_position(elements::SlidersType type, std::size_t cells_count) noexcept {
-    switch (type) {
-        case elements::SlidersType::DiceCountSlider : {
-            return {elements::coord::SLIDER_DICE_COUNT_X +
-                (TextureManager::get_slider_texture_size(type) / (1 + cells_count) / 2.f)
-                - (elements::coord::TRACK_SIZE / 2),
-            elements::coord::SLIDER_DICE_COUNT_Y +
-                (elements::coord::SLIDER_WIGHT / 2)  - (elements::coord::TRACK_SIZE / 2)};
-        }
+std::vector<float> PositionManager::get_slider_border_positions(
+    const elements::SliderInfo &slider_info,
+    const float slider_size) noexcept {
+    const auto cells_count = (slider_info.value_max - slider_info.value_min + 1U);
+    const auto cells_size = slider_size / static_cast<float>(cells_count);
+    std::vector<float> positions;
+    positions.reserve(cells_count - 1);
+    for (auto value = slider_info.value_min; value < slider_info.value_max; value++) {
+        positions.emplace_back(cells_size * (static_cast<float>(value) - static_cast<float>(slider_info.value_min) + 1U));
     }
-    std::unreachable();
+    return positions;
 }
-
-
 
 

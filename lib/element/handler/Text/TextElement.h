@@ -28,6 +28,9 @@ namespace elements {
     };
 
     using YahtzeeMainTextElement = TextElement<TextType::YahtzeeMain>;
-    using ChooseGameModeElement = TextElement<TextType::ChooseGameMode>;
+    using ChooseGameModeTextElement = TextElement<TextType::ChooseGameMode>;
+    using SettingsTextElement = TextElement<TextType::Settings>;
+    using PlayerCountTextElement = TextElement<TextType::PlayerCount>;
+    using DiceCountTextElement = TextElement<TextType::DiceCount>;
 }
 #endif //TEXTELEMENT_H

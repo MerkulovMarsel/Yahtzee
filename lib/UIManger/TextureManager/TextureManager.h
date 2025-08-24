@@ -46,7 +46,8 @@ namespace elements::assets_filenames {
     CONST TEST_GAME_MODE_BUTTON = "TestGameModeButton.png";
 
     CONST SLIDER_TRACK = "SliderTrack.png";
-    CONST SLIDER_THUMB_DICE_COUNT = "SliderThumbDiceCount.png";
+    CONST SLIDER_THUMB = "SliderThumbDiceCount.png";
+    CONST SLIDER_BORDER = "SliderBorder.png";
 
     // Игровые элементы
     CONST GAME_BOARD = "GameBoard.png";
@@ -104,7 +105,8 @@ class TextureManager {
     TEXTURE( SINGLE_PLAYER_BUTTON )
     TEXTURE( ONE_VS_ONE_BUTTON )
     TEXTURE( SLIDER_TRACK )
-    TEXTURE( SLIDER_THUMB_DICE_COUNT )
+    TEXTURE( SLIDER_THUMB )
+    TEXTURE( SLIDER_BORDER )
     TEXTURE( SUM1 )
     TEXTURE( SUM2 )
     TEXTURE( SUM3 )
@@ -133,6 +135,7 @@ class TextureManager {
         sf::Color background_color = sf::Color::Transparent) const;
 
 
+    bool draw_texture_on_sprite(sf::Sprite &sprite, const sf::Texture &texture, sf::Vector2f position) const;
 
 public:
     explicit TextureManager(const char* argv0) {
@@ -155,17 +158,20 @@ public:
 
     TexturePtr get_player_count_button_texture(elements::PlayerCount type) const;
 
-    TexturePtr get_slider_track_texture(elements::SlidersType type) const;
+    TexturePtr get_slider_track_texture() const;
 
-    TexturePtr get_slider_thumb_texture(elements::SlidersType type) const;
+    TexturePtr get_slider_thumb_texture() const;
 
-    static float get_slider_texture_size(elements::SlidersType type) noexcept;
+    TexturePtr get_slider_border_texture() const;
+
+    float get_slider_texture_size() const noexcept;
 
     TexturePtr get_text_background_texture(elements::TextType type, const elements::Data&) const;
 
     bool draw_text(sf::Sprite& sprite, const std::string& text, unsigned int char_size) const;
 
-    bool draw_set_game_mode_button_text(elements::GameMode mode) const;
+    bool draw_slider_borders(sf::Sprite& sprite, const std::vector<float>& positions) const;
+
 };
 
 #undef CONST
