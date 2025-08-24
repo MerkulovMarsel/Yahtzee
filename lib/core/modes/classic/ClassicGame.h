@@ -13,7 +13,7 @@ class ClassicGame final : public Game {
 public:
     explicit ClassicGame(const GameConfig::GameState& state);
 
-    explicit ClassicGame(Page get);
+    explicit ClassicGame(elements::Page get);
 
     [[nodiscard]] GameResult get_player_result(std::size_t player_index) const noexcept override;
 

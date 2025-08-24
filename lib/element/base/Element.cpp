@@ -38,6 +38,10 @@ void Element::set_color(const sf::Color& new_color) noexcept {
     sprite.setColor(new_color);
 }
 
+void Element::set_origin_to_centre() noexcept {
+    sprite.setOrigin(sf::Vector2f(sprite.getTexture()->getSize() / 2U));
+}
+
 void Element::render(sf::RenderTarget& window) const {
     window.draw(sprite);
 }

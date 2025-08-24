@@ -5,9 +5,8 @@
 #ifndef STATCTOUCHABLEELEMENT_H
 #define STATCTOUCHABLEELEMENT_H
 #include "element/base/StaticUpdate/StaticUpdateElement.h"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
 
-template <Page page, typename State>
+template <elements::Page page, typename State>
 class StaticTouchableElement  : public StaticUpdateElement,
                                 public TouchableElement<State> {
 public:
@@ -15,7 +14,7 @@ public:
         return this->get_sprite();
     }
 
-    bool enable(const Page current_page) const noexcept override {
+    bool enable(const elements::Page current_page) const noexcept override {
         return current_page == page && this->is_enable(this->get_state());
     }
 

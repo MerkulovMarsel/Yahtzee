@@ -6,9 +6,8 @@
 #define DYNAMICTOUCHABLEELEMENT_H
 #include "element/base/Element.h"
 #include "element/base/Touchable/TouchableElement.h"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
 
-template <Page page, typename State>
+template <elements::Page page, typename State>
 class DynamicTouchableElement : public Element,
                                       public TouchableElement<State> {
 public:
@@ -22,7 +21,7 @@ private:
     UpdateFunction update_function;
 
 public:
-    bool enable(const Page current_page) const noexcept override {
+    bool enable(const elements::Page current_page) const noexcept override {
         return current_page == page && this->is_enable(this->get_state());
     }
 

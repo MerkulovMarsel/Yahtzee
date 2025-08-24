@@ -5,9 +5,8 @@
 #ifndef STATICUNOUCHABLEELEMENT_H
 #define STATICUNOUCHABLEELEMENT_H
 #include "element/base/StaticUpdate/StaticUpdateElement.h"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
 
-template <Page page>
+template <elements::Page page>
 class StaticUntouchableElement : public StaticUpdateElement {
 public:
     StaticUntouchableElement(
@@ -17,7 +16,7 @@ public:
         : StaticUpdateElement(texture, position, scale) {
     }
 
-    bool enable(const Page current_page) const noexcept override {
+    bool enable(const elements::Page current_page) const noexcept override {
         return current_page == page;
     }
 };

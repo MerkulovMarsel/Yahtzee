@@ -51,6 +51,9 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
         element/handler/SetPlayerCountButton/SetPlayerCountButton.h
         element/handler/IntegerSlider/IntegerSlider.h
         element/handler/SetGameModeButton/SetGameModeButton.h
+        element/handler/Text/TextElement.h
+        UIManger/ElementsTypes/Constant.h
+        UIManger/ElementsTypes/Data.h
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

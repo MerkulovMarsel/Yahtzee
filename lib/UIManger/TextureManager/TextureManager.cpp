@@ -9,6 +9,7 @@
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include "UIManger/ElementsTypes/Data.h"
 
 fs::path TextureManager::find_assets_dir(const char *argv0) {
     const fs::path exe_path = fs::absolute(argv0).parent_path();
@@ -76,100 +77,127 @@ bool TextureManager::load_texture(const TexturePtr &texture, const fs::path &fil
     return texture->loadFromFile((ASSETS_DIR / filename).string());
 }
 
-std::shared_ptr<sf::Texture> TextureManager::set_text_on_texture(const std::shared_ptr<sf::Texture> &base_texture,
-    const std::string &text, const sf::Font &font, unsigned int char_size, const sf::Color &text_color) {
-    if (!base_texture) { return nullptr; }
-
-    sf::RenderTexture texture_text;
-    auto size = base_texture->getSize();
-    if (!texture_text.create(size.x, size.y)) {
-        return base_texture; // Fallback to original
-    }
-
-    texture_text.clear(sf::Color::Transparent);
-    texture_text.draw(sf::Sprite(*base_texture));
-
-    sf::Text sf_text;
-    sf_text.setFont(font);
-    sf_text.setString(text);
-    sf_text.setCharacterSize(char_size);
-    sf_text.setFillColor(text_color);
-
-
-    sf_text.setOrigin(sf_text.getLocalBounds().getSize() / 2.0f);
-    sf_text.setPosition(size.x / 2.0f, size.y / 2.0f);
-
-    texture_text.draw(sf_text);
-    texture_text.display();
-
-    return std::make_shared<sf::Texture>(texture_text.getTexture());
-}
-
-std::shared_ptr<sf::Texture> TextureManager::create_text_texture(const std::string &text, const sf::Font &font,
-    unsigned int char_size, const sf::Color &text_color, const sf::Color &background_color) {
-    sf::Text temp_text;
-    temp_text.setFont(font);
-    temp_text.setString(text);
-    temp_text.setCharacterSize(char_size);
-
-    sf::FloatRect text_bounds = temp_text.getLocalBounds();
-
-    sf::RenderTexture texture_text;
-    if (!texture_text.create(
-        static_cast<unsigned int>(text_bounds.width + 2),
-        static_cast<unsigned int>(text_bounds.height + 2)
-    )) {
+TextureManager::TexturePtr TextureManager::create_texture(std::optional<std::size_t>& index) const {
+    try {
+        generic_textures.push_back(std::make_shared<sf::Texture>());
+        index = generic_textures.size() - 1;
+        return generic_textures.back();
+    } catch (...) {
+        index = std::nullopt;
         return nullptr;
     }
+}
 
-    texture_text.clear(background_color);
 
+bool TextureManager::draw_text_on_sprite(
+    sf::Sprite &sprite,
+    const std::string &text,
+    const sf::Font &font,
+    unsigned int char_size,
+    std::optional<sf::Vector2f> position,
+    const sf::Color &text_color,
+    sf::Color background_color) const
+{
+    if (sprite.getTexture() == nullptr) {
+        return false;
+    }
+
+    // Получаем размеры текстуры спрайта
+    sf::Vector2u size = sprite.getTexture()->getSize();
+
+    // Создаем временную текстуру для рендеринга
+    sf::RenderTexture render_texture;
+    if (!render_texture.create(size.x, size.y)) {
+        return false;
+    }
+
+    // Очищаем прозрачным или указанным цветом фона
+    render_texture.clear(background_color);
+
+    // Рисуем оригинальную текстуру спрайта
+    sf::Sprite original_sprite(*sprite.getTexture());
+    original_sprite.setTextureRect(sprite.getTextureRect());
+    render_texture.draw(original_sprite);
+
+    // Создаем и настраиваем текст
     sf::Text sf_text;
     sf_text.setFont(font);
     sf_text.setString(text);
     sf_text.setCharacterSize(char_size);
     sf_text.setFillColor(text_color);
 
-    sf_text.setPosition(
-        -text_bounds.left + 1,
-        -text_bounds.top + 1
-    );
+    // Позиционирование текста
+    if (!position.has_value()) {
+        // Автоматическое центрирование
+        sf::FloatRect text_bounds = sf_text.getLocalBounds();
+        sf_text.setOrigin(text_bounds.width / 2.0f, text_bounds.height / 2.0f);
+        position = sf::Vector2f(size.x / 2.0f, size.y / 2.0f);
+    }
+    sf_text.setPosition(position.value());
 
-    texture_text.draw(sf_text);
-    texture_text.display();
+    // Рисуем текст на временной текстуре
+    render_texture.draw(sf_text);
+    render_texture.display();
 
-    return std::make_shared<sf::Texture>(texture_text.getTexture());
+    // Создаем постоянную текстуру через менеджер
+    std::optional<std::size_t> texture_index;
+    TexturePtr permanent_texture = create_texture(texture_index);
+
+    if (!permanent_texture) {
+        return false; // Не удалось создать текстуру
+    }
+
+    // Копируем данные из временной текстуры в постоянную
+    permanent_texture->loadFromImage(render_texture.getTexture().copyToImage());
+
+    // Сохраняем оригинальные параметры спрайта
+    sf::IntRect originalTextureRect = sprite.getTextureRect();
+    sf::Vector2f originalOrigin = sprite.getOrigin();
+    sf::Vector2f originalScale = sprite.getScale();
+    float originalRotation = sprite.getRotation();
+
+    // Обновляем текстуру спрайта
+    sprite.setTexture(*permanent_texture, false); // false = не сбрасывать rect
+
+    // Восстанавливаем оригинальные параметры
+    sprite.setTextureRect(originalTextureRect);
+    sprite.setOrigin(originalOrigin);
+    sprite.setScale(originalScale);
+    sprite.setRotation(originalRotation);
+
+    return true;
 }
+
 
 TextureManager::TexturePtr TextureManager::get_change_page_button_texture() const {
     return CHANGE_PAGE_BUTTON;
 }
 
-TextureManager::TexturePtr TextureManager::get_background_texture(Page page) const {
-    if (page == Page::GAME_PLAYING) {
+TextureManager::TexturePtr TextureManager::get_background_texture(elements::Page page) const {
+    if (page == elements::Page::GAME_PLAYING) {
         return GAME_BOARD;
     }
-    if (page == Page::GAME_OVER) {
+    if (page == elements::Page::GAME_OVER) {
         return GAME_OVER_BOARD;
     }
-    if (page == Page::CONFIG_SETTINGS) {
+    if (page == elements::Page::CONFIG_SETTINGS) {
         return CONFIG_BOARD;
     }
     return SETTINGS_BOARD;
 }
 
-TextureManager::TexturePtr TextureManager::get_set_game_mode_texture(GameMode mode) const {
+TextureManager::TexturePtr TextureManager::get_set_game_mode_texture(elements::GameMode mode) const {
     switch (mode) {
-        case GameMode::CLASSIC : {
+        case elements::GameMode::CLASSIC : {
             return CLASSIC_MODE_BUTTON;
         }
-        case GameMode::COUNT_DOWN : {
+        case elements::GameMode::COUNT_DOWN : {
             return COUNTDOWN_MODE_BUTTON;
         }
-        case GameMode::RACE: {
+        case elements::GameMode::RACE: {
             return RACE_MODE_BUTTON;
         }
-        case GameMode::SPEED: {
+        case elements::GameMode::SPEED: {
             return SPEED_MODE_BUTTON;
         }
         default: {
@@ -178,41 +206,65 @@ TextureManager::TexturePtr TextureManager::get_set_game_mode_texture(GameMode mo
     }
 }
 
-TextureManager::TexturePtr TextureManager::get_player_count_button_texture(PlayerCount type) const {
+TextureManager::TexturePtr TextureManager::get_player_count_button_texture(elements::PlayerCount type) const {
     switch (type) {
-        case PlayerCount::SINGLE : {
+        case elements::PlayerCount::SINGLE : {
             return SINGLE_PLAYER_BUTTON;
         }
-        case PlayerCount::ONE_VS_ONE: {
+        case elements::PlayerCount::ONE_VS_ONE: {
             return ONE_VS_ONE_BUTTON;
         }
     }
     std::unreachable();
 }
 
-TextureManager::TexturePtr TextureManager::get_slider_track_texture(SlidersType type) const {
+TextureManager::TexturePtr TextureManager::get_slider_track_texture(elements::SlidersType type) const {
     switch (type) {
-        case SlidersType::DiceCountSlider : {
+        case elements::SlidersType::DiceCountSlider : {
             return SLIDER_TRACK;
         }
     }
     std::unreachable();
 }
 
-TextureManager::TexturePtr TextureManager::get_slider_thumb_texture(SlidersType type) const {
+TextureManager::TexturePtr TextureManager::get_slider_thumb_texture(elements::SlidersType type) const {
     switch (type) {
-        case SlidersType::DiceCountSlider : {
+        case elements::SlidersType::DiceCountSlider : {
             return SLIDER_THUMB_DICE_COUNT;
         }
     }
     std::unreachable();
 }
 
-float TextureManager::get_slider_texture_size(SlidersType type) noexcept {
+float TextureManager::get_slider_texture_size(const elements::SlidersType type) noexcept {
     switch (type) {
-        case SlidersType::DiceCountSlider : {
+        case elements::SlidersType::DiceCountSlider : {
             return 700.f;
         }
     }
     std::unreachable();
+}
+
+TextureManager::TexturePtr TextureManager::get_text_background_texture(const elements::TextType type, const elements::Data& data) const {
+    std::optional<std::size_t> index;
+    TexturePtr permanent_texture = create_texture(index);
+
+    if (!permanent_texture) {
+        return nullptr;
+    }
+
+    const auto info = *data.get_info<elements::TextType, elements::TextInfo, elements::TextData>(type);
+    const auto width = static_cast<unsigned int>(info.char_size) * info.text.size();
+    const auto height = static_cast<unsigned int>(info.char_size);
+    constexpr unsigned int loft = 50U;
+    permanent_texture->create(width + loft, height + loft);
+    return permanent_texture;
+}
+
+bool TextureManager::draw_text(sf::Sprite &sprite, const std::string& text,const unsigned int char_size) const {
+    return draw_text_on_sprite(sprite, text, font, char_size);
+}
+
+bool TextureManager::draw_set_game_mode_button_text(elements::GameMode mode) const {
+    return true;
 }

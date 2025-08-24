@@ -15,6 +15,7 @@
 
 #include "Animator/Animator.h"
 #include "Touchable/TouchableElement.h"
+#include "element/handler/Tracker.h"
 
 
 class Element {
@@ -40,8 +41,9 @@ public:
     void set_position(const sf::Vector2f& new_position) noexcept;
     void set_scale(const sf::Vector2f& new_scale) noexcept;
     void set_color(const sf::Color& new_color) noexcept;
+    void set_origin_to_centre() noexcept;
 
-    virtual bool enable(Page current_page) const noexcept = 0;
+    virtual bool enable(elements::Page current_page) const noexcept = 0;
     virtual void render(sf::RenderTarget& window) const;
     virtual void update(float dt);
 

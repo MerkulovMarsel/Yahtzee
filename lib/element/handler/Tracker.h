@@ -5,11 +5,9 @@
 #ifndef TRACKER_H
 #define TRACKER_H
 #include "UIManger/UIManager.h"
+#include <optional>
 
 namespace elements {
-    using Page = Page;
-    using GameMode = GameMode;
-    using TextTypes = text::TextTypes;
     using MousePos = const std::optional<sf::Vector2f>&;
 
     class UITracker {

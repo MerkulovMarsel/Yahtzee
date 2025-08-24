@@ -5,26 +5,31 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "ElementsTypes/Data.h"
 #include "ElementsTypes/ElementsTypes.h"
 #include "GameConfig/GameConfig.h"
 #include "PositionManger/PositionManager.h"
 #include "TextureManager/TextureManager.h"
+#include <cstddef>
+#include <optional>
 
 
 struct UIManager {
     TextureManager texture_manager;
+    elements::Data data;
     PositionManager position_manager;
     GameConfig game_config;
-    Page current_page = Page::START_SETTING;
+    elements::Page current_page = elements::Page::START_SETTING;
+    std::optional<elements::GameMode> mode;
     mutable std::size_t elements_count = 0;
 
     explicit UIManager(const char* argv0): texture_manager(argv0) {
     }
 
 
-    std::size_t& get_slider_state(SlidersType slider);
+    std::size_t& get_slider_state(elements::SlidersType slider);
 
-    static std::size_t get_slider_lowest_value(SlidersType slider);
+    static std::size_t get_slider_lowest_value(elements::SlidersType slider);
 
     void add() const {
         elements_count++;

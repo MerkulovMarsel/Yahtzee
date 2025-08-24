@@ -4,9 +4,9 @@
 
 #ifndef PAGECHANGERBUTTON_H
 #define PAGECHANGERBUTTON_H
+#include "UIManger/PositionManger/PositionManager.h"
 #include "element/base/StaticTouchable/StaticTouchableElement.h"
 #include "element/handler/Tracker.h"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
 
 namespace elements {
     template<Page page_from, Page page_to>

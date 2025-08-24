@@ -4,55 +4,30 @@
 
 #ifndef SETGAMEMODEBUTTON_H
 #define SETGAMEMODEBUTTON_H
-#include "core/game.h"
-#include "core/modes/classic/ClassicGame.h"
-#include "core/modes/coundown/CountDownGame.h"
-#include "core/modes/race/RaceGame.h"
-#include "core/modes/speed/SpeedGame.h"
-#include "core/modes/test/TestGame.h"
 #include "element/base/StaticTouchable/StaticTouchableElement.h"
 #include "element/handler/BackGround/BackGround.h"
 
 namespace  elements {
-    using StartGameInfo = std::tuple<std::unique_ptr<Game>,GameConfig::GameState, Page>;
-    using SetGameModeButton = StaticTouchableElement<Page::START_SETTING, StartGameInfo>;
+    using SetGameModeState = std::optional<GameMode>;
 
     template<GameMode mode>
-    void set_game_mode(StartGameInfo& game_info);
-
-
-
-
-
-
-
-    // definitions
-    template<GameMode mode>
-    void set_game_mode(StartGameInfo& game_info) {
-        switch (mode) {
-            case GameMode::CLASSIC : {
-                std::get<0>(game_info) = std::make_unique<Game>(ClassicGame(std::get<1>(game_info)));
-                break;
-            }
-            case GameMode::COUNT_DOWN : {
-                std::get<0>(game_info) = std::make_unique<Game>(CountDownGame(std::get<1>(game_info)));
-                break;
-            }
-            case GameMode::RACE: {
-                std::get<0>(game_info) = std::make_unique<Game>(RaceGame(std::get<1>(game_info)));
-                break;
-            }
-            case GameMode::SPEED: {
-                std::get<0>(game_info) = std::make_unique<Game>(SpeedGame(std::get<1>(game_info)));
-                break;
-            }
-            default: {
-                std::get<0>(game_info) = std::make_unique<Game>(TestGame(std::get<1>(game_info)));
-            }
+    class SetGameModeButton final : public StaticTouchableElement<Page::START_SETTING, SetGameModeState>, UITracker {
+    public:
+        explicit SetGameModeButton(UIManager& manager) :
+        StaticTouchableElement {
+            manager.mode,
+            *manager.texture_manager.get_set_game_mode_texture(mode),
+            PositionManager::get_set_game_mode_position(mode),
+            [](SetGameModeState & state, MousePos) { state = mode; }
+        }, UITracker(manager) {
         }
+    };
 
-        std::get<2>(game_info) = Page::GAME_PLAYING;
-    }
+    using ClassicGameModeButton = SetGameModeButton<GameMode::CLASSIC>;
+    using CountDownGameModeButton = SetGameModeButton<GameMode::COUNT_DOWN>;
+    using RaceGameModeButton = SetGameModeButton<GameMode::RACE>;
+    using SpeedGameModeButton = SetGameModeButton<GameMode::SPEED>;
+    using TestGameModeButton = SetGameModeButton<GameMode::TEST>;
 }
 
 #endif //SETGAMEMODEBUTTON_H

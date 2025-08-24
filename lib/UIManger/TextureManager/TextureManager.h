@@ -10,7 +10,9 @@
 
 #include "UIManger/ElementsTypes/ElementsTypes.h"
 #include "SFML/Graphics/Font.hpp"
+#include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
+#include "UIManger/ElementsTypes/Data.h"
 
 #define CONST static constexpr auto
 #define TEXTURE(NAME) std::shared_ptr<sf::Texture> NAME = std::make_shared<sf::Texture>();
@@ -68,19 +70,6 @@ namespace elements::assets_filenames {
     CONST SUM6 = "SUM6.png";
 }
 
-namespace elements::text {
-    CONST STANDARD_TEXT_SIZE = 24;
-    enum class TextTypes : std::uint8_t {
-        CHOSE_GAME_MODE         = 1,
-        SETTING_HEAD            = 0,
-        PLAYER_COUNT            = 0,
-        DICE_COUNT              = 0,
-        ROLL_COUNT              = 0,
-        CATEGORIES              = 0,
-        PLAYERS_NAMES           = 2,
-        GAME_OVER_PLAYERS_NAMES = 3,
-    };
-}
 
 class TextureManager {
     using TexturePtr = std::shared_ptr<sf::Texture>;
@@ -123,6 +112,7 @@ class TextureManager {
     TEXTURE( SUM5 )
     TEXTURE( SUM6 )
     sf::Font font;
+    mutable std::vector<std::shared_ptr<sf::Texture>> generic_textures;
 
     // Texture utility
     static fs::path find_assets_dir(const char* argv0);
@@ -131,28 +121,22 @@ class TextureManager {
 
     bool load_texture(const TexturePtr& texture, const fs::path& filename) const;
 
-    static std::shared_ptr<sf::Texture> set_text_on_texture(
-    const std::shared_ptr<sf::Texture>& base_texture,
-    const std::string& text,
-    const sf::Font& font,
-    unsigned int char_size = elements::text::STANDARD_TEXT_SIZE,
-    const sf::Color& text_color = sf::Color::White
-    );
+    TexturePtr create_texture(std::optional<std::size_t>& index) const;
 
-    static std::shared_ptr<sf::Texture> create_text_texture(
-        const std::string& text,
-        const sf::Font& font,
-        unsigned int char_size = elements::text::STANDARD_TEXT_SIZE,
-        const sf::Color& text_color = sf::Color::White,
-        const sf::Color& background_color = sf::Color::Transparent
-    );
+    bool draw_text_on_sprite(
+        sf::Sprite &sprite,
+        const std::string &text,
+        const sf::Font &font,
+        unsigned int char_size,
+        std::optional<sf::Vector2f> position = std::nullopt,
+        const sf::Color &text_color = elements::TEXT_COLOR,
+        sf::Color background_color = sf::Color::Transparent) const;
+
+
 
 public:
-
     explicit TextureManager(const char* argv0) {
         ASSETS_DIR = find_assets_dir(argv0);
-
-
         if (!load_all_textures()) {
             throw std::runtime_error("Failed to load textures from: " +
                                    ASSETS_DIR.string());
@@ -160,21 +144,28 @@ public:
     }
 
 
+
     // Texture getters
 
     TexturePtr get_change_page_button_texture() const;
 
-    TexturePtr get_background_texture(Page page) const;
+    TexturePtr get_background_texture(elements::Page page) const;
 
-    TexturePtr get_set_game_mode_texture(GameMode mode) const;
+    TexturePtr get_set_game_mode_texture(elements::GameMode mode) const;
 
-    TexturePtr get_player_count_button_texture(PlayerCount type) const;
+    TexturePtr get_player_count_button_texture(elements::PlayerCount type) const;
 
-    TexturePtr get_slider_track_texture(SlidersType type) const;
+    TexturePtr get_slider_track_texture(elements::SlidersType type) const;
 
-    TexturePtr get_slider_thumb_texture(SlidersType type) const;
+    TexturePtr get_slider_thumb_texture(elements::SlidersType type) const;
 
-    static float get_slider_texture_size(SlidersType type) noexcept;
+    static float get_slider_texture_size(elements::SlidersType type) noexcept;
+
+    TexturePtr get_text_background_texture(elements::TextType type, const elements::Data&) const;
+
+    bool draw_text(sf::Sprite& sprite, const std::string& text, unsigned int char_size) const;
+
+    bool draw_set_game_mode_button_text(elements::GameMode mode) const;
 };
 
 #undef CONST

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <ranges>
 
-GameController::GameController(const char* argv0) : config(argv0), element_handler(config, elements) {
+GameController::GameController(const char* argv0) : manager(argv0), element_handler(manager, elements) {
 }
 
 void GameController::handleEvent(const sf::Event& event) {
@@ -19,14 +19,20 @@ void GameController::handleEvent(const sf::Event& event) {
     );
 
     for (auto & obj : std::ranges::reverse_view(elements)) {
-        if (!obj->enable(config.current_page) ) { continue; }
+        if (!obj->enable(manager.current_page) ) { continue; }
 
         if (!obj->get_sprite_bounds().contains(mouse_pos)) { continue; }
 
         if (auto* touchable = dynamic_cast<TouchableElementBase*>(obj)) {
             touchable->touch(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
-            return;
+            break;
         }
+    }
+
+    if (manager.mode) {
+        init_game();
+        manager.current_page = elements::Page::GAME_PLAYING;
+        manager.mode = std::nullopt;
     }
 }
 
@@ -37,8 +43,12 @@ void GameController::update(const float dt) {
 
 void GameController::render(sf::RenderWindow &window) {
     std::ranges::for_each(elements, [&](const auto& object) {
-    if (object->enable(config.current_page)) {
+    if (object->enable(manager.current_page)) {
         object->render(window);
     }
 });
+}
+
+void GameController::init_game() {
+
 }

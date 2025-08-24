@@ -4,30 +4,46 @@
 
 #ifndef INTEGERSLIDER_H
 #define INTEGERSLIDER_H
+#include "UIManger/ElementsTypes/Data.h"
+#include "UIManger/PositionManger/PositionManager.h"
+#include "UIManger/UIManager.h"
 #include "element/base/DynamicTouchable/DynamicTouchableElement.h"
+#include "element/base/Element.h"
 #include "element/handler/Tracker.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "UIManger/ElementsTypes/ElementsTypes.h"
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <cstddef>
 
 
 namespace elements {
-    template<SlidersType slider_type>
-    void integral_slider_touch_cb(std::size_t& state, MousePos position);
-
-    template<SlidersType slider_type>
-    void integral_slider_update( sf::Sprite& sprite,const std::size_t& state, bool);
 
     template<SlidersType sliders_type>
     class IntegerSlider final : public DynamicTouchableElement<Page::CONFIG_SETTINGS, std::size_t>, UITracker {
-        sf::Sprite thumb_sprite{};
+        sf::Sprite thumb_sprite;
     public:
         explicit IntegerSlider(UIManager& manager) :
         DynamicTouchableElement(
             manager.get_slider_state(sliders_type),
             *manager.texture_manager.get_slider_track_texture(sliders_type),
             sf::Vector2f(0.,0.),
-            integral_slider_touch_cb<sliders_type>,
-            integral_slider_update<sliders_type>
+            [&](std::size_t& state, MousePos position) {
+                const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
+                const float cells_size = manager.texture_manager.get_slider_texture_size(sliders_type) /
+                    static_cast<float>(1 + info.value_max - info.value_min);
+                const float mouse_x = position->x - manager.position_manager.get_slider_position(sliders_type).x;
+                state = info.value_min + static_cast<std::size_t>(mouse_x / cells_size);
+            },
+            [&](sf::Sprite& sprite,const std::size_t& state, bool /*unused*/) {
+                const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
+                const auto cells_count = info.value_max - info.value_min;
+                const float cells_size = manager.texture_manager.get_slider_texture_size(sliders_type) /
+                    static_cast<float>(1 + cells_count);
+                const float x = manager.position_manager.get_track_lowest_value_position(sliders_type, cells_count).x +
+                    (cells_size * static_cast<float>(state - info.value_min));
+                sprite.setPosition(x, manager.position_manager.get_track_lowest_value_position(sliders_type, cells_count).y);
+            }
         ),
         UITracker(manager){
             thumb_sprite.setTexture(*manager.texture_manager.get_slider_thumb_texture(sliders_type));
@@ -44,31 +60,7 @@ namespace elements {
         }
     };
 
-    using DIceCountSlider = IntegerSlider<SlidersType::DiceCountSlider>;
-
-
-
-
-    template<SlidersType slider_type>
-    void integral_slider_touch_cb(std::size_t &state, MousePos position) {
-        constexpr auto cells_count = static_cast<std::size_t>(slider_type);
-        const float x_start = PositionManager::get_slider_position(slider_type).x;
-        const std::size_t lowest_value = UIManager::get_slider_lowest_value(slider_type);
-        const float cells_size = TextureManager::get_slider_texture_size(slider_type) / static_cast<float>(cells_count);
-        const float mouse_x = position->x - x_start;
-        state = lowest_value + static_cast<std::size_t>(mouse_x / cells_size);
-    }
-
-    template<SlidersType slider_type>
-    void integral_slider_update(sf::Sprite &sprite, const std::size_t &state, bool) {
-        constexpr auto cells_count = static_cast<std::size_t>(slider_type);
-        const float cells_size = TextureManager::get_slider_texture_size(slider_type) / static_cast<float>(cells_count);
-        const float x_lowest_value = PositionManager::get_track_lowest_value_position(slider_type).x;
-        const std::size_t lowest_value = UIManager::get_slider_lowest_value(slider_type);
-        const float x = x_lowest_value + (cells_size * (state - lowest_value));
-        const float y = PositionManager::get_track_lowest_value_position(slider_type).y;
-        sprite.setPosition(x, y);
-    }
+    using DiceCountSlider = IntegerSlider<SlidersType::DiceCountSlider>;
 
 }
 

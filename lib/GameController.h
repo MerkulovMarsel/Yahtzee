@@ -15,7 +15,7 @@
 
 class GameController {
     std::unique_ptr<Game> game;
-    UIManager config;
+    UIManager manager;
     Handler::Elements elements;
     Handler element_handler;
 
@@ -28,6 +28,9 @@ public:
     void update(float dt);
 
     void render(sf::RenderWindow & window);
+
+private:
+    void init_game();
 };
 
 
