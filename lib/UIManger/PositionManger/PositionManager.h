@@ -26,9 +26,10 @@ struct PositionManager {
     static sf::Vector2f get_background_position() noexcept;
     static sf::Vector2f get_set_game_mode_position(elements::GameMode mode) noexcept;
     static sf::Vector2f get_change_page_button_position() noexcept;
-    static sf::Vector2f get_count_player_button_position(elements::PlayerCount type) noexcept;
+
     static sf::Vector2f get_slider_position(elements::SlidersType type) noexcept;
     static std::vector<float> get_slider_border_positions(const elements::SliderInfo &slider_info, float slider_size) noexcept;
+    static std::vector<float> get_slider_value_positions(const elements::SliderInfo &slider_info, float slider_size) noexcept;
 
 
     template <elements::ElementType Type>

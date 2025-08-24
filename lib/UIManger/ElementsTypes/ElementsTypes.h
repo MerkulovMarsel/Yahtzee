@@ -27,10 +27,7 @@ namespace elements {
         TEST
     };
 
-    enum class PlayerCount : std::uint8_t {
-        SINGLE = 1,
-        ONE_VS_ONE = 2
-    };
+
 
     using Code = std::uint16_t;
     static constexpr Code LEVEL = 1U << 8U;
@@ -90,10 +87,13 @@ namespace elements {
     };
     static constexpr Code SLIDER_TYPE_ID = GET_TYPE_ID(SlidersType::DiceCountSlider);
 
+
+
     template<typename T>
     concept ElementType = std::is_enum_v<T> && (
                 std::is_same_v<T, SlidersType> ||
-                std::is_same_v<T, TextType> );
+                std::is_same_v<T, TextType> ||
+                std::is_same_v<T, PlayerCountButtonType>);
 }
 
 namespace elements {

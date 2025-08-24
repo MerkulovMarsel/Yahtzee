@@ -36,8 +36,7 @@ namespace elements::assets_filenames {
     CONST SQUARE_SETTING = "SquareSetting.png";
     CONST RECTANGLE_SETTING = "RectangleSetting.png";
     CONST CHANG_PAGE_BUTTON_SETTING = "ChangePageButton.png";
-    CONST SINGLE_PLAYER_BUTTON_SETTING = "SinglePlayerButton.png";
-    CONST ONE_VS_ONE_BUTTON = "OneVsOneButton.png";
+    CONST PLAYER_COUNT_BUTTON = "PlayerCountButton.png";
 
     CONST CLASSIC_GAME_MODE_BUTTON = "ClassicGameModeButton.png";
     CONST COUNTDOWN_GAME_MODE_BUTTON = "CountDownGameModeButton.png";
@@ -102,8 +101,7 @@ class TextureManager {
     TEXTURE( SQUARE_SETTING )
     TEXTURE( RECTANGLE_SETTING )
     TEXTURE( CHANGE_PAGE_BUTTON )
-    TEXTURE( SINGLE_PLAYER_BUTTON )
-    TEXTURE( ONE_VS_ONE_BUTTON )
+    TEXTURE( PLAYER_COUNT_BUTTON )
     TEXTURE( SLIDER_TRACK )
     TEXTURE( SLIDER_THUMB )
     TEXTURE( SLIDER_BORDER )
@@ -156,7 +154,7 @@ public:
 
     TexturePtr get_set_game_mode_texture(elements::GameMode mode) const;
 
-    TexturePtr get_player_count_button_texture(elements::PlayerCount type) const;
+    TexturePtr get_player_count_button_texture() const;
 
     TexturePtr get_slider_track_texture() const;
 
@@ -168,9 +166,15 @@ public:
 
     TexturePtr get_text_background_texture(elements::TextType type, const elements::Data&) const;
 
-    bool draw_text(sf::Sprite& sprite, const std::string& text, unsigned int char_size) const;
+    bool draw_text(
+        sf::Sprite& sprite,
+        const std::string& text,
+        unsigned int char_size,
+        std::optional<sf::Vector2f> position = std::nullopt) const;
 
     bool draw_slider_borders(sf::Sprite& sprite, const std::vector<float>& positions) const;
+
+    bool draw_slider_value(sf::Sprite& sprite, const std::vector<float>& positions, const elements::SliderInfo &info) const;
 
 };
 

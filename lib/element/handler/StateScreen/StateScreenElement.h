@@ -4,5 +4,12 @@
 
 #ifndef STATESCREENELEMENT_H
 #define STATESCREENELEMENT_H
+#include "element/base/Element.h"
+#include "element/base/StateHandler/StateHandler.h"
+
+namespace elements {
+
+
+}
 
 #endif //STATESCREENELEMENT_H

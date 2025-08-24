@@ -4,7 +4,6 @@
 
 #include "TextureManager.h"
 
-#include <utility>
 
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
@@ -57,8 +56,7 @@ bool TextureManager::load_all_textures() {
                    load_texture(SQUARE_SETTING, elements::assets_filenames::SQUARE_SETTING) &&
                    load_texture(RECTANGLE_SETTING, elements::assets_filenames::RECTANGLE_SETTING) &&
                    load_texture(CHANGE_PAGE_BUTTON, elements::assets_filenames::CHANG_PAGE_BUTTON_SETTING) &&
-                   load_texture(SINGLE_PLAYER_BUTTON, elements::assets_filenames::SINGLE_PLAYER_BUTTON_SETTING) &&
-                   load_texture(ONE_VS_ONE_BUTTON, elements::assets_filenames::ONE_VS_ONE_BUTTON) &&
+                   load_texture(PLAYER_COUNT_BUTTON, elements::assets_filenames::PLAYER_COUNT_BUTTON) &&
                    load_texture(SLIDER_TRACK, elements::assets_filenames::SLIDER_TRACK) &&
                    load_texture(SLIDER_THUMB, elements::assets_filenames::SLIDER_THUMB) &&
                    load_texture(SLIDER_BORDER, elements::assets_filenames::SLIDER_BORDER) &&
@@ -258,16 +256,8 @@ TextureManager::TexturePtr TextureManager::get_set_game_mode_texture(elements::G
     }
 }
 
-TextureManager::TexturePtr TextureManager::get_player_count_button_texture(elements::PlayerCount type) const {
-    switch (type) {
-        case elements::PlayerCount::SINGLE : {
-            return SINGLE_PLAYER_BUTTON;
-        }
-        case elements::PlayerCount::ONE_VS_ONE: {
-            return ONE_VS_ONE_BUTTON;
-        }
-    }
-    std::unreachable();
+TextureManager::TexturePtr TextureManager::get_player_count_button_texture() const {
+    return PLAYER_COUNT_BUTTON;
 }
 
 TextureManager::TexturePtr TextureManager::get_slider_track_texture() const {
@@ -302,7 +292,11 @@ TextureManager::TexturePtr TextureManager::get_text_background_texture(const ele
     return permanent_texture;
 }
 
-bool TextureManager::draw_text(sf::Sprite &sprite, const std::string& text, const unsigned int char_size) const {
+bool TextureManager::draw_text(
+    sf::Sprite &sprite,
+    const std::string& text,
+    const unsigned int char_size,
+    std::optional<sf::Vector2f> position) const {
     sf::Text sf_text;
     sf_text.setFont(font);
     sf_text.setString(text);
@@ -333,9 +327,9 @@ bool TextureManager::draw_text(sf::Sprite &sprite, const std::string& text, cons
     permanent_texture->loadFromImage(render_texture.getTexture().copyToImage());
 
     sf::Vector2u sprite_size = sprite.getTexture()->getSize();
-    sf::Vector2f center_position(sprite_size.x / 2.0f, sprite_size.y / 2.0f);
+    sf::Vector2f center_position(static_cast<float>(sprite_size.x) / 2.0f, static_cast<float>(sprite_size.y) / 2.0f);
 
-    return draw_texture_on_sprite(sprite, *permanent_texture, center_position);
+    return draw_texture_on_sprite(sprite, *permanent_texture, position.value_or(center_position));
 }
 
 bool TextureManager::draw_slider_borders(sf::Sprite &sprite,const std::vector<float>& positions) const {
@@ -344,6 +338,22 @@ bool TextureManager::draw_slider_borders(sf::Sprite &sprite,const std::vector<fl
         if (!draw_texture_on_sprite(sprite, *SLIDER_BORDER, sf::Vector2f(x, y))) {
             return false;
         };
+    }
+    return true;
+}
+
+bool TextureManager::draw_slider_value(sf::Sprite &sprite, const std::vector<float> &positions, const elements::SliderInfo &info) const {
+    const float y = static_cast<float>(SLIDER_THUMB->getSize().y) / 5.0f;
+    std::size_t start_value = info.value_min;
+    for (const auto x : positions) {
+        if (!draw_text(
+            sprite,
+            std::to_string(start_value),
+            static_cast<unsigned int>(info.char_size),
+            sf::Vector2f(x, y))) {
+            return false;
+        };
+        ++start_value;
     }
     return true;
 }

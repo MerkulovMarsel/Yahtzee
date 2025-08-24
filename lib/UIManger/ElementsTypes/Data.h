@@ -39,8 +39,8 @@ namespace elements {
         L = 70U,
         M = 40,
         S = 30,
-        XS = 20,
-        XXS = 10
+        XS = 25,
+        XXS = 20
     };
 
     using HighFix = std::pair<PositionType, float>;
@@ -129,12 +129,47 @@ namespace elements {
     };
 
 
+    struct PlayerCountInfo final : Info {
+        PlayerCountInfo(std::string&& text, const std::size_t player_count) : text(std::move(text)), player_count(player_count) {}
+        static constexpr auto char_size = CharSizeType::M;
+        std::string text;
+        std::size_t player_count;
+    };
+    class PlayerCountData final : public TypeData {
+        Storage<PlayerCountInfo> players;
+    public:
+        PlayerCountData() : players({
+            {GET_VALUE(PlayerCountButtonType::Single),
+                {HighFix(PositionType::LEFT, coord::PLAYER_COUNT_BUTTON_Y),
+                    PlayerCountInfo{"Single", 1U}}
+                },
+                {GET_VALUE(PlayerCountButtonType::OneVsOne),
+                {HighFix(PositionType::RIGHT, coord::PLAYER_COUNT_BUTTON_Y),
+                     PlayerCountInfo{"1 VS 1", 2U}}
+                }
+        }) {}
+
+        [[nodiscard]] Position get_position(const Code code) const noexcept override {
+            return players.at(code).first;
+        }
+
+        [[nodiscard]] const Info * get_info(const Code code) const noexcept override {
+            return &players.at(code).second;
+        }
+    };
+}
+
+
+
+namespace elements {
     class Data {
         TextData text_data;
         SliderData slider_data;
+        PlayerCountData player_count_button_data;
         std::unordered_map<Code, TypeData*> data {
             {TEXT_TYPE_ID, &text_data},
-            {SLIDER_TYPE_ID, &slider_data}
+            {SLIDER_TYPE_ID, &slider_data},
+            {PLAYER_COUNT_BUTTON_ID, &player_count_button_data}
         };
 
     public:
