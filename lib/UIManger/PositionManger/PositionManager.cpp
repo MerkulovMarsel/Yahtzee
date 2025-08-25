@@ -41,24 +41,26 @@ sf::Vector2f PositionManager::get_slider_position(const elements::SlidersType ty
 std::vector<float> PositionManager::get_slider_border_positions(
     const elements::SliderInfo &slider_info,
     const float slider_size) noexcept {
-    const auto cells_count = (slider_info.value_max - slider_info.value_min + 1U);
+    const auto cells_count = ((slider_info.value_max - slider_info.value_min) / slider_info.value_step) + 1U;
     const auto cells_size = slider_size / static_cast<float>(cells_count);
     std::vector<float> positions;
     positions.reserve(cells_count - 1);
-    for (auto value = slider_info.value_min; value < slider_info.value_max; value++) {
-        positions.emplace_back(cells_size * (static_cast<float>(value) - static_cast<float>(slider_info.value_min) + 1U));
+    for (auto value = slider_info.value_min; value < slider_info.value_max; value+= slider_info.value_step) {
+        positions.emplace_back(cells_size *
+            ((static_cast<float>(value) - static_cast<float>(slider_info.value_min)) / slider_info.value_step + 1U));
     }
     return positions;
 }
 
 std::vector<float> PositionManager::get_slider_value_positions(const elements::SliderInfo &slider_info,
     float slider_size) noexcept {
-    const auto cells_count = (slider_info.value_max - slider_info.value_min + 1U);
+    const auto cells_count = ((slider_info.value_max - slider_info.value_min) / slider_info.value_step) + 1U;
     const auto cells_size = slider_size / static_cast<float>(cells_count);
     std::vector<float> positions;
     positions.reserve(cells_count);
-    for (auto value = slider_info.value_min; value <= slider_info.value_max; value++) {
-        positions.emplace_back(cells_size * (static_cast<float>(value) - static_cast<float>(slider_info.value_min) + 0.5f));
+    for (auto value = slider_info.value_min; value <= slider_info.value_max; value+= slider_info.value_step) {
+        positions.emplace_back(cells_size *
+            ((static_cast<float>(value) - static_cast<float>(slider_info.value_min)) / slider_info.value_step + 0.5f));
     }
     return positions;
 }

@@ -353,7 +353,7 @@ bool TextureManager::draw_slider_value(sf::Sprite &sprite, const std::vector<flo
             sf::Vector2f(x, y))) {
             return false;
         };
-        ++start_value;
+        start_value += info.value_step;
     }
     return true;
 }

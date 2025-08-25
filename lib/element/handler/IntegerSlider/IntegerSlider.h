@@ -31,17 +31,19 @@ namespace elements {
             [&](std::size_t& state, MousePos position) {
                 const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
                 float slider_texture_size = manager.texture_manager.get_slider_texture_size();
-                const float cells_size = slider_texture_size / static_cast<float>(1 + info.value_max - info.value_min);
-                const float mouse_x = position->x - manager.get_position(sliders_type).x + slider_texture_size / 2.f;
-                state = info.value_min + static_cast<std::size_t>(mouse_x / cells_size);
+                const auto cells_count = ((info.value_max - info.value_min) / info.value_step) + 1U;
+                const float cells_size = slider_texture_size / static_cast<float>(cells_count);
+                const float mouse_x = position->x - manager.get_position(sliders_type).x + (slider_texture_size / 2.f);
+                state = info.value_min + static_cast<std::size_t>(mouse_x / cells_size) * info.value_step;
             },
             [&](sf::Sprite& sprite,const std::size_t& state, bool /*unused*/) {
                 const auto info = *manager.data.get_info<SlidersType,SliderInfo,SliderData>(sliders_type);
-                const auto cells_count = info.value_max - info.value_min;
-                const float cells_size = manager.texture_manager.get_slider_texture_size() /
-                    static_cast<float>(1 + cells_count);
+                const auto cells_count = ((info.value_max - info.value_min) / info.value_step) + 1U;
+                const float cells_size = manager.texture_manager.get_slider_texture_size() / static_cast<float>(cells_count);
                 const float x = manager.get_position(sliders_type).x +
-                    (cells_size * (static_cast<float>(state) - static_cast<float>((info.value_max + info.value_min) / 2)));
+                    (cells_size *
+                        (static_cast<float>(state) - (static_cast<float>(info.value_max + info.value_min) / 2.f)) /
+                        static_cast<float>(info.value_step));
                 sprite.setPosition(x, manager.get_position(sliders_type).y);
             }
         ),
