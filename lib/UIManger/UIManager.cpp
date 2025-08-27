@@ -2,7 +2,7 @@
 // Created by Марсель on 25.07.2025.
 //
 
-#include "UIManager.h"
+#include "UIManager.hpp"
 
 #include <utility>
 

@@ -12,7 +12,7 @@
 #include <utility>
 #include <variant>
 
-#include "Constant.h"
+#include "Constant.hpp"
 #include "ElementsTypes.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/System/Vector2.hpp"
@@ -115,7 +115,7 @@ namespace elements {
         SliderData() : sliders({
             {GET_VALUE(SlidersType::DiceCountSlider),
                 {Position{HighFix{PositionType::MID, coord::SLIDER_DICE_COUNT_X}},
-                 SliderInfo{1U, 9U, 2U, CharSizeType::XS}}
+                 SliderInfo{3U, 7U, 1U, CharSizeType::XS}}
             }
         }) {}
 

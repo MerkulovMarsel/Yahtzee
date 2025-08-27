@@ -2,7 +2,7 @@
 // Created by Марсель on 17.08.2025.
 //
 
-#include "TestGame.h"
+#include "TestGame.hpp"
 
 
 GameConfig::Dices TestGame::get_dices(std::size_t player_index) const {

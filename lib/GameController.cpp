@@ -3,8 +3,13 @@
 //
 
 #include "GameController.h"
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Window/Event.hpp"
+#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "elements/base/interfaces/touchable/TouchableElement.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 
 GameController::GameController(const char* argv0) : manager(argv0), element_handler(manager, elements) {
@@ -18,13 +23,15 @@ void GameController::handleEvent(const sf::Event& event) {
         static_cast<float>(event.mouseButton.y)
     );
 
-    for (auto & obj : std::ranges::reverse_view(elements)) {
+    for (const auto & obj : std::ranges::reverse_view(elements)) {
         if (!obj->enable(manager.current_page) ) { continue; }
 
         if (!obj->get_sprite_bounds().contains(mouse_pos)) { continue; }
 
         if (auto* touchable = dynamic_cast<TouchableElementBase*>(obj)) {
-            touchable->touch(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            touchable->touch(sf::Vector2f(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y)));
             break;
         }
     }

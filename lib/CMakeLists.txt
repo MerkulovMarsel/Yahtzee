@@ -5,56 +5,102 @@ project(yahtzee-lib LANGUAGES CXX)
 # Setup a library target
 file(GLOB_RECURSE YAHTZEE_SOURCES CONFIGURE_DEPENDS *.cpp)
 add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
-        core/game.h
         Application.cpp
-        Application.h
-        UIManger/UIManager.h
-        UIManger/UIManager.cpp
-        UIManger/GameConfig/GameConfig.h
+        Application.hpp
+
         GameController.cpp
-        GameController.h
-        exception/YahtzeeException.h
-        exception/game/GameException.cpp
-        exception/game/GameException.h
+        GameController.hpp
+
+
+
+        core/game.hpp
+
         core/modes/classic/ClassicGame.cpp
-        core/modes/classic/ClassicGame.h
-        exception/config/ConfigException.cpp
-        exception/config/ConfigException.h
+        core/modes/classic/ClassicGame.hpp
+
         core/modes/speed/SpeedGame.cpp
-        core/modes/speed/SpeedGame.h
+        core/modes/speed/SpeedGame.hpp
+
         core/modes/coundown/CountDownGame.cpp
-        core/modes/coundown/CountDownGame.h
+        core/modes/coundown/CountDownGame.hpp
+
         core/modes/race/RaceGame.cpp
-        core/modes/race/RaceGame.h
-        element/base/Element.h
+        core/modes/race/RaceGame.hpp
+
         core/modes/test/TestGame.cpp
-        core/modes/test/TestGame.h
-        element/handler/Handler.h
+        core/modes/test/TestGame.hpp
+
+
+
+        UIManger/UIManager.hpp
+        UIManger/UIManager.cpp
+
+        UIManger/GameConfig/GameConfig.hpp
+
+        UIManger/ElementsTypes/ElementsTypes.hpp
+        UIManger/ElementsTypes/Constant.hpp
+        UIManger/ElementsTypes/Data.hpp
+
         UIManger/TextureManager/TextureManager.cpp
-        UIManger/TextureManager/TextureManager.h
-        UIManger/ElementsTypes/ElementsTypes.h
+        UIManger/TextureManager/TextureManager.hpp
+
         UIManger/PositionManger/PositionManager.cpp
-        UIManger/PositionManger/PositionManager.h
-        element/base/animator/Animator.cpp
-        element/base/animator/Animator.h
-        element/base/Element.cpp
-        element/base/StaticUpdate/StaticUpdateElement.cpp
-        element/base/StaticUpdate/StaticUpdateElement.h
-        element/base/StateHandler/StateHandler.h
-        element/base/Touchable/TouchableElement.h
-        element/base/StaticTouchable/StaticTouchableElement.h
-        element/base/DynamicTouchable/DynamicTouchableElement.h
-        element/base/StaticUntouchable/StaticUntouchableElement.h
-        element/handler/BackGround/BackGround.h
-        element/handler/Tracker.h
-        element/handler/PageChangerButton/PageChangerButton.h
-        element/handler/SetPlayerCountButton/SetPlayerCountButton.h
-        element/handler/IntegerSlider/IntegerSlider.h
-        element/handler/SetGameModeButton/SetGameModeButton.h
-        element/handler/Text/TextElement.h
-        UIManger/ElementsTypes/Constant.h
-        UIManger/ElementsTypes/Data.h
-        element/handler/StateScreen/StateScreenElement.h
+        UIManger/PositionManger/PositionManager.hpp
+
+
+
+        exception/YahtzeeException.hpp
+
+        exception/game/GameException.cpp
+        exception/game/GameException.hpp
+
+        exception/config/ConfigException.cpp
+        exception/config/ConfigException.hpp
+
+
+        elements/base/interfaces/element/Element.hpp
+        elements/base/interfaces/element/Element.cpp
+
+        elements/base/interfaces/element/animator/Animator.cpp
+        elements/base/interfaces/element/animator/Animator.hpp
+
+        elements/base/interfaces/element/static/StaticUpdateElement.cpp
+        elements/base/interfaces/element/static/StaticUpdateElement.hpp
+
+        elements/base/interfaces/element/dynamic/DynamicUpdateElement.hpp
+
+        elements/base/interfaces/state/StateHandler.hpp
+
+        elements/base/interfaces/Touchable/TouchableElement.hpp
+
+
+        elements/base/general/StaticTouchable/StaticTouchableElement.hpp
+
+        elements/base/general/DynamicTouchable/DynamicTouchableElement.hpp
+
+        elements/base/general/StaticUntouchable/StaticUntouchableElement.hpp
+
+        elements/base/general/DynamicUntouchable/DynamicUntouchableElement.hpp
+
+
+        elements/handler/Handler.hpp
+
+        elements/handler/BackGround/BackGround.hpp
+
+        elements/handler/Tracker.hpp
+
+        elements/handler/PageChangerButton/PageChangerButton.hpp
+
+        elements/handler/SetPlayerCountButton/SetPlayerCountButton.hpp
+
+        elements/handler/IntegerSlider/IntegerSlider.hpp
+
+        elements/handler/SetGameModeButton/SetGameModeButton.hpp
+
+        elements/handler/Text/TextElement.hpp
+
+        elements/handler/RollCountScreen/RollCountScreenElement.hpp
+
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

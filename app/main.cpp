@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Application.h"
-#include "exception/YahtzeeException.h"
+#include "exception/YahtzeeException.hpp"
 
 
 int main(int argc,const char* argv[]) {

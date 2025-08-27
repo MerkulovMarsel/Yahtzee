@@ -2,14 +2,14 @@
 // Created by Марсель on 19.08.2025.
 //
 
-#include "PositionManager.h"
+#include "PositionManager.hpp"
 #include "UIManger/ElementsTypes/Data.h"
 #include "UIManger/ElementsTypes/ElementsTypes.h"
 
 #include <utility>
 #include <vector>
 
-#include "UIManger/ElementsTypes/Constant.h"
+#include "UIManger/ElementsTypes/Constant.hpp"
 
 sf::Vector2f PositionManager::get_background_position() noexcept {
     return {0.f, 0.f};

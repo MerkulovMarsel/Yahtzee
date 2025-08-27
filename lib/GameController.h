@@ -6,10 +6,10 @@
 #define GAMECONTROLLER_H
 #include <memory>
 
-#include "UIManger/UIManager.h"
-#include "core/game.h"
-#include "element/base/Element.h"
-#include "element/handler/Handler.h"
+#include "UIManger/UIManager.hpp"
+#include "core/game.hpp"
+#include "elements/base/interfaces/element/Element.hpp"
+#include "elements/handler/Handler.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 
 

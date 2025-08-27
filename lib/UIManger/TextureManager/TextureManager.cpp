@@ -2,7 +2,7 @@
 // Created by Марсель on 19.08.2025.
 //
 
-#include "TextureManager.h"
+#include "TextureManager.hpp"
 
 
 #include "SFML/Graphics/RenderTexture.hpp"

@@ -2,7 +2,7 @@
 // Created by Марсель on 02.08.2025.
 //
 
-#include "ConfigException.h"
+#include "ConfigException.hpp"
 
 
 const char * ConfigException::what() const noexcept {
