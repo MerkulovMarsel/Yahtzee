@@ -2,21 +2,23 @@
 // Created by Марсель on 25.07.2025.
 //
 
-#include "Application.h"
+#include "Application.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <imgui-SFML.h>
 #include <memory>
 
-#include "GameController.h"
+#include "GameController.hpp"
 
-void Application::run() {
+void Application::run(const char* argv0) {
 
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Yahtzee");
+    sf::RenderWindow window(sf::VideoMode(1300, 900), "Yahtzee");
     sf::Clock frameClock;
     ImGui::SFML::Init(window);
 
-    auto gameController = std::make_unique<GameController>();
+
+
+    GameController gameController(argv0);
     while (window.isOpen()) {
         sf::Event event{};
 
@@ -26,28 +28,21 @@ void Application::run() {
                 window.close();
             }
 
-            /*какие еще мы поддерживаем?*/
             if (event.type == sf::Event::MouseButtonPressed ){
-
-                // Обрабатываем взаимодействие с игроком
-                gameController->handleEvent(event);
-
+                gameController.handleEvent(event);
             }
         }
 
         const float dt = frameClock.restart().asSeconds();
         ImGui::SFML::Update(window, sf::seconds(dt));
 
-        //Я так понимаю можно менять анимацию в зависимости от времени,
-        //но до анимации еще далеко, так что пока пусто
-        gameController->update(dt);
+        gameController.update(dt);
 
         static constexpr std::uint32_t PHONE_COLOR = 0;
         window.clear(sf::Color(PHONE_COLOR));
 
-        //Делает window.draw(Какой-то спрайт) по моей задумке
-        gameController->render(window);
 
+        gameController.render(window);
         ImGui::SFML::Render(window);
         window.display();
     }
