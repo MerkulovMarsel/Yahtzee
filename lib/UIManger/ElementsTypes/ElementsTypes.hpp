@@ -55,6 +55,7 @@ namespace elements {
         return static_cast<Code>(type) & VALUE_MASK;
     }
 
+
     enum class TextType : Code {
         YahtzeeMain =  0U,
         ChooseGameMode = NEXT(YahtzeeMain),
@@ -76,11 +77,13 @@ namespace elements {
         std::unreachable();
     }
 
+
     enum class PlayerCountButtonType : Code {
         Single = NEXT_TYPE(TextType::YahtzeeMain),
         OneVsOne = NEXT(Single)
     };
     static constexpr Code PLAYER_COUNT_BUTTON_ID = GET_TYPE_ID(PlayerCountButtonType::Single);
+
 
     enum class SlidersType : Code {
         DiceCountSlider = NEXT_TYPE(PlayerCountButtonType::Single)
@@ -88,12 +91,28 @@ namespace elements {
     static constexpr Code SLIDER_TYPE_ID = GET_TYPE_ID(SlidersType::DiceCountSlider);
 
 
+    enum class ScreenType : Code {
+        RollCountScreen = NEXT_TYPE(SlidersType::DiceCountSlider)
+    };
+    static constexpr Code SCREEN_TYPE_ID = GET_TYPE_ID(ScreenType::RollCountScreen);
+    template <ScreenType type>
+    static constexpr Page get_screen_page() {
+        switch (type) {
+            case ScreenType::RollCountScreen:
+                return Page::CONFIG_SETTINGS;
+        }
+        std::unreachable();
+    }
+}
 
+
+namespace elements {
     template<typename T>
     concept ElementType = std::is_enum_v<T> && (
                 std::is_same_v<T, SlidersType> ||
                 std::is_same_v<T, TextType> ||
-                std::is_same_v<T, PlayerCountButtonType>);
+                std::is_same_v<T, PlayerCountButtonType> ||
+                std::is_same_v<T, ScreenType>);
 }
 
 namespace elements {

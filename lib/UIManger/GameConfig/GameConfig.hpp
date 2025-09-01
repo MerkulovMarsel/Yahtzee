@@ -4,9 +4,13 @@
 
 #ifndef GAMECONFIG_H
 #define GAMECONFIG_H
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <numeric>
+#include <optional>
 #include <ranges>
+#include <utility>
 #include <vector>
 
 #include "exception/config/ConfigException.hpp"
@@ -163,7 +167,7 @@ struct GameConfig {
 
 
     bool is_rule_enabled(const GameRuleFlags rule) const {
-        return (game_state.enabled_rules & static_cast<uint32_t>(rule)) != 0u;
+        return (game_state.enabled_rules & static_cast<std::uint32_t>(rule)) != 0u;
     }
 
     struct GameState {

@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "animator/Animator.hpp"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 
 class EnableBase {
 public:

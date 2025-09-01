@@ -2,13 +2,13 @@
 // Created by Марсель on 25.07.2025.
 //
 
-#include "Application.h"
+#include "Application.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <imgui-SFML.h>
 #include <memory>
 
-#include "GameController.h"
+#include "GameController.hpp"
 
 void Application::run(const char* argv0) {
 

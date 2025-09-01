@@ -3,10 +3,12 @@
 //
 
 #include "PositionManager.hpp"
-#include "UIManger/ElementsTypes/Data.h"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "SFML/System/Vector2.hpp"
+#include "UIManger/ElementsTypes/Data.hpp"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "UIManger/ElementsTypes/Constant.hpp"
@@ -63,6 +65,21 @@ std::vector<float> PositionManager::get_slider_value_positions(const elements::S
             ((static_cast<float>(value) - static_cast<float>(slider_info.value_min)) / slider_info.value_step + 0.5f));
     }
     return positions;
+}
+
+sf::Vector2f PositionManager::get_position(
+    const elements::Position& position,
+    const sf::Vector2f screen_size,
+    const sf::Vector2f pos_start) {
+    if (std::holds_alternative<elements::PositionType>(position)) {
+        const auto pos_type = std::get<elements::PositionType>(position);
+        return screen_size * elements::get_normalized_coord(pos_type) + pos_start;
+    }
+    if (std::holds_alternative<elements::HighFix>(position)) {
+        const auto [type, pos] = std::get<elements::HighFix>(position);
+        return elements::Cord{screen_size.x * elements::get_normalized_coord(type).x, pos} + pos_start;
+    }
+    return std::get<elements::Cord>(position) + pos_start;
 }
 
 

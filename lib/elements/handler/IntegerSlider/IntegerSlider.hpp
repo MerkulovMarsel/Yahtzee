@@ -4,20 +4,18 @@
 
 #ifndef INTEGERSLIDER_H
 #define INTEGERSLIDER_H
-#include "UIManger/ElementsTypes/Data.h"
+#include "UIManger/ElementsTypes/Data.hpp"
 #include "UIManger/PositionManger/PositionManager.hpp"
 #include "UIManger/UIManager.hpp"
 #include "elements/base/interfaces/element/Element.hpp"
 #include "elements/handler/Tracker.hpp"
 #include "SFML/Graphics/Sprite.hpp"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <cstddef>
 
 #include "elements/base/general/DynamicTouchable/DynamicTouchableElement.hpp"
-
-#define GET_INFO manager.data.get_info<SlidersType, SliderInfo, SliderData>(sliders_type)
 
 namespace elements {
 
@@ -28,17 +26,23 @@ namespace elements {
 
         sf::Sprite thumb_sprite;
 
+        struct SliderInfoKey{
+            using InfoType = SliderInfo;
+            using DataType = SliderData;
+            using Type = SlidersType;
+        };
+
     public:
         explicit IntegerSlider(UIManager& manager) :
         DynamicTouchableElement(
-            manager.get_slider_state(sliders_type),
+            *manager.get_state<SlidersType, SlidersType::DiceCountSlider>(),
 
             {.texture = manager.texture_manager.get_slider_track_texture(),
                 .position = sf::Vector2f(0., 0.)},
 
                 [&](sf::Sprite &sprite, const std::size_t &state) {
 
-                const auto [value_min, value_max, value_step, _] = *GET_INFO;
+                const auto [value_min, value_max, value_step, _] = *manager.data.get_info<SliderInfoKey>(sliders_type);
 
                 const auto cells_count = ((value_max - value_min) / value_step) + 1U;
 
@@ -57,7 +61,7 @@ namespace elements {
 
 {.touch_callback = [&](std::size_t& state, MousePos position) {
 
-                    const auto info = *GET_INFO;
+                    const auto info = *manager.data.get_info<SliderInfoKey>(sliders_type);
 
                     const float slider_texture_size = manager.texture_manager.get_slider_texture_size();
 
@@ -78,7 +82,7 @@ namespace elements {
 
             thumb_sprite.setPosition(manager.get_position(sliders_type));
 
-            const auto info =  *GET_INFO;
+            const auto info =  *manager.data.get_info<SliderInfoKey>(sliders_type);
 
             const float slider_size = manager.texture_manager.get_slider_texture_size();
 
@@ -105,6 +109,5 @@ namespace elements {
 
 }
 
-#undef GET_INFO
 
 #endif //INTEGERSLIDER_H

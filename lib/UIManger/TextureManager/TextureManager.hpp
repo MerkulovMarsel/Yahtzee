@@ -8,11 +8,12 @@
 #include <memory>
 #include <filesystem>
 
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include "UIManger/ElementsTypes/Data.h"
+#include "SFML/System/String.hpp"
+#include "UIManger/ElementsTypes/Data.hpp"
 
 #define CONST static constexpr auto
 #define TEXTURE(NAME) std::shared_ptr<sf::Texture> NAME = std::make_shared<sf::Texture>();
@@ -125,7 +126,7 @@ class TextureManager {
 
     bool draw_text_on_sprite(
         sf::Sprite &sprite,
-        const std::string &text,
+        const sf::String &text,
         const sf::Font &font,
         unsigned int char_size,
         std::optional<sf::Vector2f> position = std::nullopt,
@@ -152,7 +153,7 @@ public:
 
     TexturePtr get_background_texture(elements::Page page) const;
 
-    TexturePtr get_set_game_mode_texture(elements::GameMode mode) const;
+    TexturePtr get_set_game_mode_texture() const;
 
     TexturePtr get_player_count_button_texture() const;
 
@@ -164,11 +165,13 @@ public:
 
     float get_slider_texture_size() const noexcept;
 
-    TexturePtr get_text_background_texture(elements::TextType type, const elements::Data&) const;
+    TexturePtr get_text_background_texture(unsigned int char_size, std::size_t text_size) const;
+
+    TexturePtr get_square_setting_texture() const;
 
     bool draw_text(
         sf::Sprite& sprite,
-        const std::string& text,
+        const sf::String &text,
         unsigned int char_size,
         std::optional<sf::Vector2f> position = std::nullopt) const;
 

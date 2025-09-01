@@ -34,6 +34,8 @@ namespace elements::coord {
     CONST SLIDER_DICE_COUNT_X = 350;
     CONST SLIDER_DICE_COUNT_Y = 300;
     CONST SLIDER_WIGHT = 50;
+
+    CONST ROLL_COUNT_SCREEN_Y = 500;
 }
 
 #undef CONST

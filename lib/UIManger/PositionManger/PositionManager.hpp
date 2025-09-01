@@ -6,23 +6,21 @@
 #define POSITIONMANAGER_H
 
 
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "UIManger/ElementsTypes/Constant.hpp"
-#include "UIManger/ElementsTypes/Data.h"
-#include <cstdint>
+#include "UIManger/ElementsTypes/Data.hpp"
 #include <vector>
 
 
+
+namespace sf {
+    inline Vector2f operator*(const Vector2f& a, const Vector2f& b) {
+        return {a.x * b.x, a.y * b.y};
+    }
+}
+
 struct PositionManager {
-
-    sf::Vector2f get_dice_position(std::size_t dice_index) const noexcept;
-    sf::Vector2f get_category_position(std::size_t category_index) const noexcept;
-    sf::Vector2f get_play_button_position() const noexcept;
-    sf::Vector2f get_roll_button_position() const noexcept;
-
-
-    static sf::Vector2f get_mode_position(std::size_t mode_index) noexcept;
     static sf::Vector2f get_background_position() noexcept;
     static sf::Vector2f get_set_game_mode_position(elements::GameMode mode) noexcept;
     static sf::Vector2f get_change_page_button_position() noexcept;
@@ -38,33 +36,22 @@ struct PositionManager {
         Type type,
         const sf::Vector2f screen_size = {elements::coord::X, elements::coord::Y},
         const sf::Vector2f pos_start = {0.f, 0.f}) const {
-        const auto raw_position = data.get_position(type);
-        if (std::holds_alternative<elements::PositionType>(raw_position)) {
-            const auto pos_type = std::get<elements::PositionType>(raw_position);
-            std::size_t x = static_cast<std::uint8_t>(pos_type) % 4U;
-            std::size_t y = static_cast<std::uint8_t>(pos_type) / 4U;
-            return elements::Cord{screen_size.x / 4.f * x, screen_size.y / 4.f * y} + pos_start;
+        const auto position = data.get_position(type);
+        if (std::holds_alternative<elements::PositionType>(position)) {
+            const auto pos_type = std::get<elements::PositionType>(position);
+            return (screen_size * elements::get_normalized_coord(pos_type)) + pos_start;
         }
-        if (std::holds_alternative<elements::HighFix>(raw_position)) {
-            const auto [type, pos] = std::get<elements::HighFix>(raw_position);
-            switch (type) {
-                case elements::PositionType::LEFT :
-                case elements::PositionType::DOWN_LEFT :
-                case elements::PositionType::UP_LEFT : {
-                    return elements::Cord{pos_start.x + (screen_size.x / 4.f),pos + pos_start.y};
-                }
-                case elements::PositionType::RIGHT :
-                case elements::PositionType::UP_RIGHT :
-                case elements::PositionType::DOWN_RIGHT: {
-                    return elements::Cord{pos_start.x + ((screen_size.x / 4.f) * 3.f),pos + pos_start.y};
-                }
-                default: {
-                    return elements::Cord{pos_start.x + (screen_size.x / 2.f),pos + pos_start.y};
-                }
-            }
+        if (std::holds_alternative<elements::HighFix>(position)) {
+            const auto [type, pos] = std::get<elements::HighFix>(position);
+            return elements::Cord{screen_size.x * elements::get_normalized_coord(type).x, screen_size.y} + pos_start;
         }
-        return std::get<elements::Cord>(raw_position) + pos_start;
+        return std::get<elements::Cord>(position) + pos_start;
     }
+
+    [[nodiscard]] static sf::Vector2f get_position(
+        const elements::Position &position,
+        sf::Vector2f screen_size = {elements::coord::X, elements::coord::Y},
+        sf::Vector2f pos_start = {0.f, 0.f});
 };
 
 

@@ -2,10 +2,10 @@
 // Created by Марсель on 29.07.2025.
 //
 
-#include "GameController.h"
+#include "GameController.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Event.hpp"
-#include "UIManger/ElementsTypes/ElementsTypes.h"
+#include "UIManger/ElementsTypes/ElementsTypes.hpp"
 #include "elements/base/interfaces/touchable/TouchableElement.hpp"
 
 #include <algorithm>

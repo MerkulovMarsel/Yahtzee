@@ -99,7 +99,7 @@ add_library(${PROJECT_NAME} ${YAHTZEE_SOURCES}
 
         elements/handler/Text/TextElement.hpp
 
-        elements/handler/RollCountScreen/RollCountScreenElement.hpp
+        elements/handler/Screen/ScreenElement.hpp
 
 )
 

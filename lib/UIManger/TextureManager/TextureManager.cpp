@@ -8,7 +8,9 @@
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
-#include "UIManger/ElementsTypes/Data.h"
+#include "SFML/System/String.hpp"
+#include "UIManger/ElementsTypes/Data.hpp"
+#include <optional>
 
 fs::path TextureManager::find_assets_dir(const char *argv0) {
     const fs::path exe_path = fs::absolute(argv0).parent_path();
@@ -90,7 +92,7 @@ TextureManager::TexturePtr TextureManager::create_texture(std::optional<std::siz
 
 bool TextureManager::draw_text_on_sprite(
     sf::Sprite &sprite,
-    const std::string &text,
+    const sf::String &text,
     const sf::Font &font,
     unsigned int char_size,
     std::optional<sf::Vector2f> position,
@@ -236,24 +238,8 @@ TextureManager::TexturePtr TextureManager::get_background_texture(elements::Page
     return SETTINGS_BOARD;
 }
 
-TextureManager::TexturePtr TextureManager::get_set_game_mode_texture(elements::GameMode mode) const {
-    switch (mode) {
-        case elements::GameMode::CLASSIC : {
-            return CLASSIC_MODE_BUTTON;
-        }
-        case elements::GameMode::COUNT_DOWN : {
-            return COUNTDOWN_MODE_BUTTON;
-        }
-        case elements::GameMode::RACE: {
-            return RACE_MODE_BUTTON;
-        }
-        case elements::GameMode::SPEED: {
-            return SPEED_MODE_BUTTON;
-        }
-        default: {
-            return TEST_MODE_BUTTON;
-        }
-    }
+TextureManager::TexturePtr TextureManager::get_set_game_mode_texture() const {
+    return CLASSIC_MODE_BUTTON;
 }
 
 TextureManager::TexturePtr TextureManager::get_player_count_button_texture() const {
@@ -273,28 +259,34 @@ TextureManager::TexturePtr TextureManager::get_slider_border_texture() const {
 }
 
 float TextureManager::get_slider_texture_size() const noexcept {
-    return SLIDER_THUMB->getSize().x;
+    return static_cast<float>(SLIDER_THUMB->getSize().x);
 }
 
-TextureManager::TexturePtr TextureManager::get_text_background_texture(const elements::TextType type, const elements::Data& data) const {
+TextureManager::TexturePtr TextureManager::get_text_background_texture(
+    const unsigned int char_size, const std::size_t text_size) const {
+
     std::optional<std::size_t> index;
+
     TexturePtr permanent_texture = create_texture(index);
 
     if (!permanent_texture) {
         return nullptr;
     }
 
-    const auto info = *data.get_info<elements::TextType, elements::TextInfo, elements::TextData>(type);
-    const auto width = static_cast<unsigned int>(info.char_size) * info.text.size();
-    const auto height = static_cast<unsigned int>(info.char_size);
+    const auto width = char_size * text_size;
+    const auto height = char_size;
     constexpr unsigned int loft = 50U;
     permanent_texture->create(width + loft, height + loft);
     return permanent_texture;
 }
 
+TextureManager::TexturePtr TextureManager::get_square_setting_texture() const {
+    return SQUARE_SETTING;
+}
+
 bool TextureManager::draw_text(
     sf::Sprite &sprite,
-    const std::string& text,
+    const sf::String &text,
     const unsigned int char_size,
     std::optional<sf::Vector2f> position) const {
     sf::Text sf_text;

@@ -8,6 +8,8 @@
 #include "BackGround/BackGround.hpp"
 #include "IntegerSlider/IntegerSlider.hpp"
 #include "PageChangerButton/PageChangerButton.hpp"
+#include "Screen/ScreenElement.hpp"
+#include "SetGameModeButton/SetGameModeButton.hpp"
 #include "SetPlayerCountButton/SetPlayerCountButton.hpp"
 #include "Text/TextElement.hpp"
 
@@ -28,10 +30,19 @@ struct Handler {
     elements::GameOverBackGround game_over_back_ground;
 
     elements::OpenConfigSettingsFromStartSettingButton config_from_start_button;
-    elements::BackToStartSettingsFromConfigSettingsButton back_to_start_button;
     elements::SinglePlayerButton single_player_button;
     elements::OneVsOnePlayerButton one_vs_one_player_button;
     elements::DiceCountSlider dice_count_slider;
+
+    elements::RollCountScreenElement roll_count_screen;
+
+
+    elements::ClassicGameModeButton classic_game_mode_button;
+    elements::SpeedGameModeButton speed_game_mode_button;
+    elements::RaceGameModeButton race_game_mode_button;
+    elements::CountDownGameModeButton count_down_game_mode_button;
+    elements::TestGameModeButton test_game_mode_button;
+
 
     explicit Handler(UIManager& manager, Elements& elements) :
         start_settings_back_ground(manager),
@@ -44,10 +55,15 @@ struct Handler {
         game_back_ground(manager),
         game_over_back_ground(manager),
         config_from_start_button(manager),
-        back_to_start_button(manager),
         single_player_button(manager),
         one_vs_one_player_button(manager),
-        dice_count_slider(manager)
+        dice_count_slider(manager),
+        roll_count_screen(manager),
+        classic_game_mode_button(manager),
+        speed_game_mode_button(manager),
+        race_game_mode_button(manager),
+        count_down_game_mode_button(manager),
+        test_game_mode_button(manager)
     {
         elements = {
             &start_settings_back_ground,
@@ -60,10 +76,15 @@ struct Handler {
             &game_back_ground,
             &game_over_back_ground,
             &config_from_start_button,
-            &back_to_start_button,
             &single_player_button,
             &one_vs_one_player_button,
-            &dice_count_slider
+            &dice_count_slider,
+            &roll_count_screen,
+            &classic_game_mode_button,
+            &speed_game_mode_button,
+            &race_game_mode_button,
+            &count_down_game_mode_button,
+            &test_game_mode_button
         };
     }
 };

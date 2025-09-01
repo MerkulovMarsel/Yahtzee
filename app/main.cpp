@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Application.h"
+#include "Application.hpp"
 #include "exception/YahtzeeException.hpp"
 
 
